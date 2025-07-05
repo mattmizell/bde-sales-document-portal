@@ -37,8 +37,9 @@ SessionLocal = sessionmaker(
     bind=engine
 )
 
-# Import Base from models - using shared Base from auth models
-from models.auth import Base
+# Create declarative base
+from sqlalchemy.ext.declarative import declarative_base
+Base = declarative_base()
 
 def get_db_session() -> Generator:
     """Get database session with automatic cleanup"""

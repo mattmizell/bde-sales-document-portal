@@ -1,5 +1,5 @@
 # BDE Sales Document Portal - Dependencies  
-# Based on working LOI automation system requirements
+# Modern stack with Rust installation for pydantic-core
 
 # FastAPI and web server
 fastapi==0.104.1

@@ -5,9 +5,8 @@ Extensible system for managing customers and document workflows
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional, List, Dict, Any
-from sqlalchemy import String, Boolean, DateTime, Text, JSON, ForeignKey, Float
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, JSON, ForeignKey, Float
+from sqlalchemy.orm import relationship
 # Import Base from auth module to ensure consistency
 from models.auth import Base
 
@@ -35,11 +34,11 @@ class Customer(Base):
     """Customer information management"""
     __tablename__ = "customers"
     
-    id: Mapped[int] = mapped_column(primary_key=True)
-    company_name: Mapped[str] = mapped_column(String(255), index=True)
-    contact_name: Mapped[str] = mapped_column(String(255))
-    email: Mapped[str] = mapped_column(String(255), index=True)
-    phone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    id = Column(Integer, primary_key=True)
+    company_name = Column(String(255), nullable=False, index=True)
+    contact_name = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=False, index=True)
+    phone = Column(String(50), nullable=True)
     
     # Address information
     address: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
