@@ -15,8 +15,8 @@ alembic==1.13.1
 httpx==0.25.2
 requests==2.31.0
 
-# Email
-smtplib2==0.2.1
+# Email (smtplib is built into Python)
+# No external email dependencies needed
 
 # Data validation
 pydantic[email]==2.5.0
