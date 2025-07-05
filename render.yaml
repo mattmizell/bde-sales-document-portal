@@ -1,0 +1,82 @@
+# Render.com deployment configuration
+# BDE Sales Document Portal - Clean v2 Architecture
+
+services:
+  - type: web
+    name: bde-sales-document-portal
+    runtime: python3
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    
+    envVars:
+      # Application
+      - key: ENVIRONMENT
+        value: production
+      
+      # Database
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bde-sales-portal-db
+          property: connectionString
+      
+      # DocuSeal Integration
+      - key: DOCUSEAL_URL
+        value: https://bde-docuseal-service.onrender.com
+      - key: DOCUSEAL_API_TOKEN
+        sync: false  # Set manually after DocuSeal deployment
+      
+      # Email Configuration
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USERNAME
+        value: transaction.coordinator.agent@gmail.com
+      - key: SMTP_PASSWORD
+        value: xmvi xvso zblo oewe
+      - key: FROM_EMAIL
+        value: transaction.coordinator.agent@gmail.com
+      
+      # Security
+      - key: SECRET_KEY
+        generateValue: true
+      
+      # Application URLs
+      - key: BASE_URL
+        value: https://bde-sales-document-portal.onrender.com
+      - key: WEBHOOK_BASE_URL
+        value: https://bde-sales-document-portal.onrender.com/api/v1/webhooks
+
+  # DocuSeal Service (separate deployment)
+  - type: web
+    name: bde-docuseal-service
+    runtime: docker
+    repo: https://github.com/docusealco/docuseal.git
+    branch: main
+    
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: SECRET_KEY_BASE
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bde-docuseal-db
+          property: connectionString
+      - key: FORCE_SSL
+        value: "false"  # Render handles SSL
+      - key: HOST
+        value: bde-docuseal-service.onrender.com
+
+databases:
+  # Main application database
+  - name: bde-sales-portal-db
+    databaseName: sales_portal_production
+    user: portal_user
+    plan: free
+  
+  # DocuSeal database  
+  - name: bde-docuseal-db
+    databaseName: docuseal_production
+    user: docuseal_user
+    plan: free
