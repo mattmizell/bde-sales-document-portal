@@ -1,15 +1,15 @@
 # BDE Sales Document Portal - Dependencies
 # Clean, modern stack with DocuSeal integration
 
-# Core FastAPI - Compatible with Pydantic 1.10.15
-fastapi==0.88.0
-uvicorn==0.20.0
-python-multipart==0.0.5
+# Core FastAPI - Python 3.13 fully compatible versions
+fastapi==0.104.1
+uvicorn==0.24.0
+python-multipart==0.0.6
 
-# Database
-sqlalchemy==1.4.53
-psycopg2-binary==2.9.7
-alembic==1.12.1
+# Database - Updated for Python 3.13
+sqlalchemy==2.0.23
+psycopg2-binary==2.9.9
+alembic==1.13.1
 
 # HTTP Client for DocuSeal API
 httpx==0.25.2
@@ -18,8 +18,8 @@ requests==2.31.0
 # Email (smtplib is built into Python)
 # No external email dependencies needed
 
-# Data validation - Use newer version for Python 3.13 compatibility
-pydantic[email]==1.10.15
+# Data validation - Python 3.13 native support
+pydantic[email]==2.5.2
 
 # Environment variables
 python-dotenv==1.0.0

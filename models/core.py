@@ -5,9 +5,9 @@ Extensible system for managing customers and document workflows
 
 from datetime import datetime
 from enum import Enum
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, JSON, ForeignKey, Float
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from typing import Optional, List, Dict, Any
+from sqlalchemy import String, Boolean, DateTime, Text, JSON, ForeignKey, Float
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 # Import Base from auth module to ensure consistency
 from models.auth import Base
 
@@ -35,34 +35,34 @@ class Customer(Base):
     """Customer information management"""
     __tablename__ = "customers"
     
-    id = Column(Integer, primary_key=True)
-    company_name = Column(String(255), nullable=False, index=True)
-    contact_name = Column(String(255), nullable=False)
-    email = Column(String(255), nullable=False, index=True)
-    phone = Column(String(50), nullable=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    company_name: Mapped[str] = mapped_column(String(255), index=True)
+    contact_name: Mapped[str] = mapped_column(String(255))
+    email: Mapped[str] = mapped_column(String(255), index=True)
+    phone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     
     # Address information
-    address = Column(String(500), nullable=True)
-    city = Column(String(100), nullable=True)
-    state = Column(String(50), nullable=True)
-    zip_code = Column(String(20), nullable=True)
-    country = Column(String(100), default="USA")
+    address: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    city: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    state: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    zip_code: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    country: Mapped[str] = mapped_column(String(100), default="USA")
     
     # Business information
-    tax_id = Column(String(50), nullable=True)
-    business_type = Column(String(100), nullable=True)
-    website = Column(String(255), nullable=True)
+    tax_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    business_type: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    website: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     
     # CRM integration
-    crm_contact_id = Column(String(100), nullable=True, index=True)
-    crm_last_sync = Column(DateTime, nullable=True)
+    crm_contact_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True, index=True)
+    crm_last_sync: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     
     # Status and metadata
-    is_active = Column(Boolean, default=True, nullable=False)
-    notes = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    created_by_id = Column(Integer, nullable=True)  # User ID
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_by_id: Mapped[Optional[int]] = mapped_column(nullable=True)  # User ID
     
     # Relationships
     workflows = relationship("DocumentWorkflow", back_populates="customer", cascade="all, delete-orphan")
@@ -95,29 +95,29 @@ class DocumentTemplate(Base):
     """Document template configuration"""
     __tablename__ = "document_templates"
     
-    id = Column(Integer, primary_key=True)
-    name = Column(String(255), nullable=False, index=True)
-    document_type = Column(String(50), nullable=False, index=True)  # DocumentType enum
-    description = Column(Text, nullable=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(255), index=True)
+    document_type: Mapped[str] = mapped_column(String(50), index=True)  # DocumentType enum
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     
     # DocuSeal integration
-    docuseal_template_id = Column(Integer, nullable=False, index=True)
+    docuseal_template_id: Mapped[int] = mapped_column(index=True)
     
     # Template configuration
-    required_fields = Column(JSON, default=list)  # List of required field names
-    field_mappings = Column(JSON, default=dict)   # Field name mappings
-    default_values = Column(JSON, default=dict)   # Default field values
+    required_fields: Mapped[List[str]] = mapped_column(JSON, default=list)  # List of required field names
+    field_mappings: Mapped[Dict[str, str]] = mapped_column(JSON, default=dict)   # Field name mappings
+    default_values: Mapped[Dict[str, Any]] = mapped_column(JSON, default=dict)   # Default field values
     
     # Settings
-    is_active = Column(Boolean, default=True, nullable=False)
-    auto_send = Column(Boolean, default=True, nullable=False)  # Auto-send to customer
-    expiry_days = Column(Integer, default=30)  # Days before document expires
-    reminder_days = Column(Integer, default=7)  # Days between reminders
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    auto_send: Mapped[bool] = mapped_column(Boolean, default=True)  # Auto-send to customer
+    expiry_days: Mapped[int] = mapped_column(default=30)  # Days before document expires
+    reminder_days: Mapped[int] = mapped_column(default=7)  # Days between reminders
     
     # Metadata
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    created_by_id = Column(Integer, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_by_id: Mapped[Optional[int]] = mapped_column(nullable=True)
     
     # Relationships
     workflows = relationship("DocumentWorkflow", back_populates="template")
@@ -144,45 +144,45 @@ class DocumentWorkflow(Base):
     """Document workflow tracking"""
     __tablename__ = "document_workflows"
     
-    id = Column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     
     # Relationships
-    customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False, index=True)
-    template_id = Column(Integer, ForeignKey("document_templates.id"), nullable=False, index=True)
-    initiated_by_id = Column(Integer, nullable=False, index=True)  # User ID
+    customer_id: Mapped[int] = mapped_column(ForeignKey("customers.id"), index=True)
+    template_id: Mapped[int] = mapped_column(ForeignKey("document_templates.id"), index=True)
+    initiated_by_id: Mapped[int] = mapped_column(index=True)  # User ID
     
     # Workflow identification
-    workflow_name = Column(String(255), nullable=False)
-    workflow_type = Column(String(50), nullable=False, index=True)  # DocumentType enum
+    workflow_name: Mapped[str] = mapped_column(String(255))
+    workflow_type: Mapped[str] = mapped_column(String(50), index=True)  # DocumentType enum
     
     # DocuSeal integration
-    docuseal_submission_id = Column(String(100), nullable=True, unique=True, index=True)
-    docuseal_template_id = Column(Integer, nullable=True)
+    docuseal_submission_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True, unique=True, index=True)
+    docuseal_template_id: Mapped[Optional[int]] = mapped_column(nullable=True)
     
     # Status tracking
-    status = Column(String(50), default=WorkflowStatus.DRAFT, nullable=False, index=True)
+    status: Mapped[str] = mapped_column(String(50), default=WorkflowStatus.DRAFT, index=True)
     
     # Form data and results
-    form_data = Column(JSON, default=dict)  # Original form data
-    submitted_data = Column(JSON, default=dict)  # Data from completed form
+    form_data: Mapped[Dict[str, Any]] = mapped_column(JSON, default=dict)  # Original form data
+    submitted_data: Mapped[Dict[str, Any]] = mapped_column(JSON, default=dict)  # Data from completed form
     
     # Timing
-    initiated_at = Column(DateTime, nullable=True)
-    sent_at = Column(DateTime, nullable=True)
-    viewed_at = Column(DateTime, nullable=True)
-    completed_at = Column(DateTime, nullable=True)
-    expires_at = Column(DateTime, nullable=True)
+    initiated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    sent_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    viewed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     
     # Results
-    document_url = Column(String(500), nullable=True)  # Final signed document URL
-    signing_url = Column(String(500), nullable=True)   # Customer signing URL
-    completed_by = Column(String(255), nullable=True)  # Customer email who completed
+    document_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)  # Final signed document URL
+    signing_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)   # Customer signing URL
+    completed_by: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)  # Customer email who completed
     
     # Metadata
-    notes = Column(Text, nullable=True)
-    error_message = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
     customer = relationship("Customer", back_populates="workflows")
@@ -241,22 +241,22 @@ class WorkflowEvent(Base):
     """Workflow event tracking for audit trail"""
     __tablename__ = "workflow_events"
     
-    id = Column(Integer, primary_key=True)
-    workflow_id = Column(Integer, ForeignKey("document_workflows.id"), nullable=False, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    workflow_id: Mapped[int] = mapped_column(ForeignKey("document_workflows.id"), index=True)
     
     # Event details
-    event_type = Column(String(100), nullable=False, index=True)
-    event_description = Column(Text, nullable=False)
-    event_data = Column(JSON, default=dict)
+    event_type: Mapped[str] = mapped_column(String(100), index=True)
+    event_description: Mapped[str] = mapped_column(Text)
+    event_data: Mapped[Dict[str, Any]] = mapped_column(JSON, default=dict)
     
     # User context
-    user_email = Column(String(255), nullable=True)
-    user_id = Column(Integer, nullable=True)
-    ip_address = Column(String(45), nullable=True)
-    user_agent = Column(Text, nullable=True)
+    user_email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    user_id: Mapped[Optional[int]] = mapped_column(nullable=True)
+    ip_address: Mapped[Optional[str]] = mapped_column(String(45), nullable=True)
+    user_agent: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     
     # Timing
-    timestamp = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+    timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
     
     # Relationships
     workflow = relationship("DocumentWorkflow", back_populates="events")

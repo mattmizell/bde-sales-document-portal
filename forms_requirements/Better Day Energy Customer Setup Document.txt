@@ -1,0 +1,20 @@
+Customer Setup Document
+Thank you for the opportunity to earn your business. Please tell us about your company.
+BUSINESS NAME	DBA
+BILLING ADDRESS	FEIN	STATE TAX ID	? Sole Proprietor
+CITY	STATE	ZIP	PHONE	FAX	? Partnership
+Est. Annual Volume Fuel	DIESEL	GAS		? C-Corp ? S-Corp
+Years in Business	# of Employees	Credit Amount Requested		? LLC ? Other 	
+Have you ever declared bankruptcy? ? Yes ? No	If Yes, Please Explain:
+
+Please tell us about Principals with over 10% ownership.	? Additional Ownership Details Attached
+
+Key Contacts: Purchasing & AP
+PURCHASING MANAGER NAME	AP CONTACT NAME
+PURCHASING EMAIL	AP EMAIL
+PURCHASING PHONE	AP PHONE
+Credit Terms
+Customer understands and agrees that if open credit terms are approved by Better Day Energy, customer agrees to pay according to those terms.. Payment received after the due date is subject to a fee of $100 per day beyond the due date. Customer agrees to pay all costs and attorney fees incurred in collection of all past due invoices and accounts. Should any customer checks or ACH credit/debits be returned by their bank for the reason of insufficient funds, customer agrees to pay one hundred thirty-five dollars ($135.00) for each check as a handling charge. Claims arising from invoices must be made within five (5) working days. Customer certifies that the information presented by the customer in this application is true and correct. Better Day Energy is authorized to contact all references and banks contained in this application as well as credit reporting agencies in order to determine the credit worthiness of the customer.
+The undersigned has read this Credit Application and agrees to the statements, terms and conditions stated herein.
+NAME	TITLE	SIGNATURE	DATE
+

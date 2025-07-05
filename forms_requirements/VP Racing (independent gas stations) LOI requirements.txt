@@ -1,0 +1,134 @@
+Letter of Intent Automation Utility - Development Prompt
+Project Overview
+Create an automated system that generates customized Letters of Intent (LOI) for VP Racing Branded Supply Agreements by integrating Less Annoying CRM form data with a standardized template, then facilitating electronic signature collection.
+System Requirements
+Core Functionality
+    1. CRM Integration: Connect to Less Annoying CRM API to retrieve LOI form submissions
+    2. Document Generation: Populate LOI template with CRM form data
+    3. Cloud Storage: Save completed LOIs to Google Drive
+    4. E-Signature: Send documents via Sign.com (or alternative) for customer signature
+    5. Workflow Management: Track document status and completion
+Technical Architecture
+Data Flow
+Less Annoying CRM Form ? API Retrieval ? Template Population ? 
+Google Drive Storage ? E-Signature Service ? Customer Email ? 
+Status Tracking ? Completion Notification
+Integration Points
+    • Less Annoying CRM API: Form data retrieval
+    • Google Drive API: Document storage and management
+    • Sign.com API (or DocuSign/Adobe Sign): E-signature workflow
+    • Email Service: Notifications and document delivery
+Required Form Fields from Less Annoying CRM
+Customer Information
+    • Company/Business Name
+    • Contact Person Name and Title
+    • Business Address (Street, City, State, ZIP)
+    • Email Address
+    • Phone Number
+Fuel Supply Details
+    • Monthly Gasoline Volume (gallons)
+    • Monthly Diesel Volume (gallons)
+    • Current Fuel Supplier
+    • Estimated Conversion Date
+Financial Information
+    • Image Funding Amount
+    • Incentive Funding Amount
+    • Total Estimated Incentives
+Project Specifications
+    • Canopy Installation Required (Yes/No)
+    • Current Branding to Remove
+    • Special Requirements/Notes
+Template Mapping
+Document Fields to Populate
+Based on the provided VP Racing LOI template, map CRM fields to:
+    1. Header Section
+        ? Customer Site Name ? Business Name
+        ? Dealer Address ? Business Address
+    2. Proposal Section
+        ? Monthly fuel volumes ? Gasoline/Diesel gallons
+        ? Agreement duration (default: 10 years)
+    3. Incentives Section
+        ? Image Funding Value ? Image Funding Amount
+        ? Incentive Funding Value ? Incentive Funding Amount
+        ? Total Estimated Incentives ? Sum calculation
+    4. Signature Section
+        ? Dealer Name ? Contact Person Name
+        ? Dealer Title ? Contact Person Title
+        ? Current Date ? Auto-generated
+System Features
+Document Generation
+    • Template Engine: Use library like jsPDF, PDFKit, or Google Docs API
+    • Field Validation: Ensure all required fields are populated
+    • Formatting: Maintain professional appearance with logos and branding
+    • Version Control: Track template versions and updates
+Google Drive Integration
+    • Folder Structure: Organize by date, customer, or status
+    • Naming Convention: Standardized file naming (e.g., "LOI_[CustomerName]_[Date]")
+    • Permissions: Appropriate access controls for team members
+    • Backup: Automatic file backup and version history
+E-Signature Workflow
+    • Document Preparation: Convert to e-signature ready format
+    • Recipient Setup: Customer email and signing requirements
+    • Reminder System: Automated follow-up emails
+    • Completion Tracking: Real-time status updates
+User Interface
+    • Dashboard: View pending, completed, and expired LOIs
+    • Manual Override: Edit templates or resend documents
+    • Reporting: Generate summaries and analytics
+    • Notifications: Alert system for completed signatures
+Technical Implementation
+Backend Development
+// Pseudo-code structure
+class LOIAutomation {
+  async retrieveCRMData(formId)
+  async populateTemplate(crmData, templateId)
+  async saveToGoogleDrive(document, folder)
+  async sendForSignature(document, customerEmail)
+  async trackStatus(documentId)
+}
+API Integrations
+    • Less Annoying CRM: RESTful API for form data
+    • Google Drive: Google Drive API v3
+    • Sign.com: REST API for document management
+    • Email: SMTP or service like SendGrid
+Error Handling
+    • API Failures: Retry logic and fallback procedures
+    • Data Validation: Check for missing or invalid form data
+    • Document Errors: Handle template population failures
+    • Delivery Issues: Track and retry failed email deliveries
+Security Considerations
+    • API Keys: Secure storage of all API credentials
+    • Data Encryption: Encrypt sensitive customer information
+    • Access Control: Role-based permissions for team access
+    • Audit Trail: Log all document generation and signing activities
+Deployment Options
+    1. Cloud-based: AWS Lambda, Google Cloud Functions, or Azure Functions
+    2. Self-hosted: Node.js application on company servers
+    3. SaaS Integration: Zapier, Microsoft Power Automate, or custom webhooks
+Testing Requirements
+    • Unit Tests: Individual component functionality
+    • Integration Tests: End-to-end workflow testing
+    • User Acceptance: Business stakeholder validation
+    • Performance Tests: Handle expected volume load
+Monitoring and Maintenance
+    • Health Checks: Monitor API connections and system status
+    • Performance Metrics: Track document generation and delivery times
+    • Error Logging: Comprehensive logging for troubleshooting
+    • Regular Updates: Keep API integrations and templates current
+Success Metrics
+    • Processing Time: From CRM form to signature request
+    • Completion Rate: Percentage of LOIs successfully signed
+    • Error Reduction: Decrease in manual intervention required
+    • User Satisfaction: Feedback from sales team and customers
+Future Enhancements
+    • Mobile App: iOS/Android app for field sales teams
+    • Advanced Analytics: Customer behavior and conversion tracking
+    • Template Variations: Multiple LOI types for different scenarios
+    • CRM Sync: Bi-directional data synchronization
+Deliverables
+    1. Functional Application: Complete automation system
+    2. Documentation: User guides and technical documentation
+    3. Training Materials: Staff training on system usage
+    4. Support Plan: Ongoing maintenance and support procedures
+This utility should streamline the LOI process, reduce manual errors, improve customer experience, and provide better tracking and management of fuel supply agreements.
+

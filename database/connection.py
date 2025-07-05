@@ -7,8 +7,8 @@ import os
 import logging
 from contextlib import contextmanager
 from typing import Generator
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import QueuePool
 
 logger = logging.getLogger(__name__)
@@ -37,8 +37,8 @@ SessionLocal = sessionmaker(
     bind=engine
 )
 
-# Create declarative base
-Base = declarative_base()
+# Import Base from models - using shared Base from auth models
+from models.auth import Base
 
 def get_db_session() -> Generator:
     """Get database session with automatic cleanup"""
@@ -78,7 +78,7 @@ def test_connection():
     """Test database connection"""
     try:
         with get_db_context() as db:
-            db.execute("SELECT 1")
+            db.execute(text("SELECT 1"))
         return {"status": "healthy", "database": "connected"}
     except Exception as e:
         return {"status": "error", "error": str(e)}

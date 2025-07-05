@@ -1,0 +1,24 @@
+ELECTRONIC FUNDS TRANSFER AUTHORIZATION AGREEMENT CUSTOMER INFORMATION 
+CUSTOMER NAME (“CUSTOMER”) 	FEDERAL TAX ID NUMBER
+ADDRESS 	CITY 	STATE 	ZIP
+ACCOUNTING / EFT CONTACT NAME 	TELEPHONE 	EFT FAX NUMBER
+EMAIL ADDRESS 	EFFECTIVE DATE
+
+
+Above named “Customer” hereby authorizes Better Day Energy Company to originate Automated Clearing House electronic funds transfer credit/debit entries to “Customer's” account, indicated below,  and hereby authorize the Depository institution, named below, hereinafter called “Financial Institution” to accept and credit or debit  the amount of such entries to the “Customer's” account. 
+ BANKING INFORMATION 
+BANK NAME 	NAME AS LISTED ON BANK ACCOUNT IF DIFFERENT THAN ABOVE
+ADDRESS 	BANK ROUTING NUMBER 	CUSTOMER ACCOUNT NUMBER
+CITY 	STATE 	ZIP 	PHONE 	FAX
+BANK CONTACT NAME 	BANK AUTHORIZED SIGNATURE (IF REQUIRED BY BANK)
+
+
+“Customer” shall be responsible for any loss which may arise by reason of any error, mistake or fraud regarding the information  provided in this agreement, except losses incurred as a result of any error, mistake or fraud of Better Day Energy, its officers, directors,  employees or agents. “Customer” may change any portion of the information provided under Bank Information by giving at least  fifteen (15) days written notice to Better Day Energy at the address shown below. 
+This authority shall remain in effect until fifteen (15) days after Financial Institution, at address shown above, and Better Day Energy, at  address shown below, have received written cancellation from “Customer”. Notice of cancellation shall in no way affect credit or  debit entries initiated prior to actual receipt and processing of notice. “Customer” understands that Better Day Energy may suspend this  Agreement at any time. 
+“Customer” understands that the Automated Clearing House electronic funds transfer debit entry will only be accepted by Financial  Institution if sufficient funds are available in “Customer’s” account listed above and “Customer” agrees separately with Better Day Energy  to maintain sufficient funds at all times in this account.  
+By signing this Authorization, “Customer” in no way relinquishes any legal right to dispute any item. 
+Customer Authorization: 
+Authorized Name 	 _______________
+Authorized Signature 	 _______________
+Title 			 _______________
+Date  			 _______________
