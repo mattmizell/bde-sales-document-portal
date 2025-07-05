@@ -1,37 +1,29 @@
-# BDE Sales Document Portal - Dependencies
-# Clean, modern stack with DocuSeal integration
+# BDE Sales Document Portal - Dependencies  
+# Based on working LOI automation system requirements
 
-# Core FastAPI - Python 3.13 fully compatible versions
+# FastAPI and web server
 fastapi==0.104.1
 uvicorn==0.24.0
+pydantic==2.5.0
 python-multipart==0.0.6
 
-# Database - Updated for Python 3.13
+# Database ORM and drivers
 sqlalchemy==2.0.23
 psycopg2-binary==2.9.9
 alembic==1.13.1
 
-# HTTP Client for DocuSeal API
-httpx==0.25.2
+# Core dependencies
 requests==2.31.0
-
-# Email (smtplib is built into Python)
-# No external email dependencies needed
-
-# Data validation - Python 3.13 native support
-pydantic[email]==2.5.2
-
-# Environment variables
-python-dotenv==1.0.0
-
-# Logging and monitoring
-structlog==23.2.0
-
-# Date/time handling
 python-dateutil==2.8.2
+aiohttp==3.9.1
+httpx==0.25.2
 
-# JSON handling (use standard library instead of orjson to avoid Rust compilation)
-# orjson==3.9.10  # Requires Rust compilation
+# Configuration and environment
+python-dotenv==1.0.0
+pyyaml==6.0.1
+
+# Email validation
+email-validator==2.1.0
 
 # Security
 passlib[bcrypt]==1.7.4
@@ -42,3 +34,4 @@ pytest==7.4.3
 pytest-asyncio==0.21.1
 black==23.11.0
 flake8==6.1.0
+structlog==23.2.0
