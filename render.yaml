@@ -5,8 +5,8 @@ services:
   - type: web
     name: bde-sales-document-portal
     runtime: python3
-    buildCommand: chmod +x install_rust.sh && ./install_rust.sh && pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main_portal.py
     
     envVars:
       # Application
