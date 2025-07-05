@@ -2,8 +2,8 @@
 # Clean, modern stack with DocuSeal integration
 
 # Core FastAPI
-fastapi==0.95.2
-uvicorn[standard]==0.22.0
+fastapi==0.100.1
+uvicorn[standard]==0.23.2
 python-multipart==0.0.6
 
 # Database
@@ -19,7 +19,7 @@ requests==2.31.0
 # No external email dependencies needed
 
 # Data validation
-pydantic[email]==1.10.13
+pydantic[email]==1.10.12
 
 # Environment variables
 python-dotenv==1.0.0

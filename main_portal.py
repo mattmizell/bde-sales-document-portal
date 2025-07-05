@@ -271,7 +271,7 @@ async def create_default_templates():
             "name": "Customer Setup Form",
             "document_type": "customer_setup",
             "description": "Initial customer onboarding and setup form",
-            "docuseal_template_id": 1,  # Update with actual DocuSeal template ID
+            "docuseal_template_id": 1331361,  # Customer Setup Form template
             "required_fields": ["company_name", "contact_name", "email", "phone"],
             "field_mappings": {
                 "Company Name": "company_name",
