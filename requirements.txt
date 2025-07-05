@@ -2,8 +2,8 @@
 # Clean, modern stack with DocuSeal integration
 
 # Core FastAPI
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
+fastapi==0.95.2
+uvicorn[standard]==0.22.0
 python-multipart==0.0.6
 
 # Database
@@ -19,7 +19,7 @@ requests==2.31.0
 # No external email dependencies needed
 
 # Data validation
-pydantic[email]==2.5.0
+pydantic[email]==1.10.13
 
 # Environment variables
 python-dotenv==1.0.0
@@ -30,8 +30,8 @@ structlog==23.2.0
 # Date/time handling
 python-dateutil==2.8.2
 
-# JSON handling
-orjson==3.9.10
+# JSON handling (use standard library instead of orjson to avoid Rust compilation)
+# orjson==3.9.10  # Requires Rust compilation
 
 # Security
 passlib[bcrypt]==1.7.4
