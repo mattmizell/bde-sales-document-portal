@@ -231,15 +231,18 @@
             
             let html = '<h3>Search Results:</h3>';
             contacts.forEach(contact => {
-                // Handle different field name formats from your CRM
-                const companyName = contact.companyName || contact.company_name || contact.Company;
-                const contactName = contact.name || contact.contactName || contact.Name;
-                const email = contact.email || contact.Email;
-                const phone = contact.phone || contact.Phone;
+                // Use the correct field names from your CRM bridge
+                const companyName = contact.company_name;
+                const contactName = contact.name;
+                const email = contact.email;
+                const phone = contact.phone;
+                
+                // Display company name if available, otherwise contact name
+                const displayName = companyName || contactName || 'Unknown Contact';
                 
                 html += `
                     <div class="contact-result" onclick="selectContact(${JSON.stringify(contact).replace(/"/g, '&quot;')})">
-                        <strong>${companyName || contactName || 'Unknown'}</strong><br>
+                        <strong>${displayName}</strong><br>
                         ${contactName && companyName ? 'Contact: ' + contactName + '<br>' : ''}
                         ${email ? 'Email: ' + email + '<br>' : ''}
                         ${phone ? 'Phone: ' + phone : ''}
@@ -264,7 +267,7 @@
             document.getElementById('contactDetails').innerHTML = `
                 <div class="field-mapping">
                     <div class="field-label">Company:</div>
-                    <div class="field-value">${contact.companyName || 'N/A'}</div>
+                    <div class="field-value">${contact.company_name || 'N/A'}</div>
                     <div class="field-label">Contact:</div>
                     <div class="field-value">${contact.name || 'N/A'}</div>
                     <div class="field-label">Email:</div>
@@ -303,7 +306,7 @@
                 prefilledData = {
                     ...baseData,
                     // Business Information
-                    business_name: selectedContact.companyName || '',
+                    business_name: selectedContact.company_name || '',
                     dba: customFields.DBA || '',
                     fein: customFields.FederalTaxID || '',
                     state_id: customFields.StateTaxID || '',
@@ -337,7 +340,7 @@
                 prefilledData = {
                     ...baseData,
                     // Customer Information
-                    customer_name: selectedContact.companyName || '',
+                    customer_name: selectedContact.company_name || '',
                     fein: customFields.FederalTaxID || '',
                     business_address: selectedContact.address?.street || '',
                     business_address_city: selectedContact.address?.city || '',
@@ -359,7 +362,7 @@
                     bank_phone: customFields.BankPhone || '',
                     bank_fax: customFields.BankFax || '',
                     routing_number: customFields.RoutingNumber || '',
-                    your_name_at_bank: customFields.NameAtBank || selectedContact.companyName || '',
+                    your_name_at_bank: customFields.NameAtBank || selectedContact.company_name || '',
                     bank_contact: customFields.BankContact || '',
                     
                     // Authorization
@@ -371,7 +374,7 @@
                 prefilledData = {
                     ...baseData,
                     // Dealer Information
-                    dealer_business_name: selectedContact.companyName || '',
+                    dealer_business_name: selectedContact.company_name || '',
                     retail_store_address: selectedContact.address?.street || '',
                     dealer_city: selectedContact.address?.city || '',
                     dealer_state: selectedContact.address?.state || '',
