@@ -30,7 +30,7 @@ import httpx
 import psycopg2
 from fastapi import HTTPException
 from pydantic import BaseModel, EmailStr
-from sqlalchemy import text
+from sqlalchemy import create_engine
 
 from database.connection import get_db_context, SessionLocal
 from database.models import CRMContactsCache
@@ -128,7 +128,7 @@ class CRMBridge:
                     LIMIT :limit_val
                 """
                 
-                result = db.execute(text(query), params)
+                result = db.execute(query, params)
                 contacts = result.fetchall()
                 
                 return [
@@ -175,7 +175,7 @@ class CRMBridge:
                     WHERE contact_id = :contact_id
                 """
                 
-                result = db.execute(text(query), {"contact_id": contact_id})
+                result = db.execute(query, {"contact_id": contact_id})
                 row = result.fetchone()
                 
                 if not row:
@@ -240,7 +240,7 @@ class CRMBridge:
                 contact_id = result.get("ContactId")
                 
                 # Update cache immediately
-                await self._update_contact_cache(contact_id, contact_data.model_dump())
+                await self._update_contact_cache(contact_id, contact_data.dict())
                 
                 logger.info(f"✅ Contact created in LACRM: {contact_id}")
                 
@@ -309,20 +309,20 @@ class CRMBridge:
         try:
             with get_db_context() as db:
                 # Total contacts
-                total_result = db.execute(text("SELECT COUNT(*) FROM crm_contacts_cache"))
+                total_result = db.execute("SELECT COUNT(*) FROM crm_contacts_cache")
                 total_contacts = total_result.fetchone()[0]
                 
                 # Fresh contacts (last 24 hours)
-                fresh_result = db.execute(text(
+                fresh_result = db.execute(
                     f"SELECT COUNT(*) FROM crm_contacts_cache WHERE last_sync > NOW() - INTERVAL '{CACHE_REFRESH_HOURS} hours'"
-                ))
+                )
                 fresh_contacts = fresh_result.fetchone()[0]
                 
                 # Stale contacts (need refresh)
                 stale_contacts = total_contacts - fresh_contacts
                 
                 # Last sync time
-                last_sync_result = db.execute(text("SELECT MAX(last_sync) FROM crm_contacts_cache"))
+                last_sync_result = db.execute("SELECT MAX(last_sync) FROM crm_contacts_cache")
                 last_sync = last_sync_result.fetchone()[0]
                 
                 return {
