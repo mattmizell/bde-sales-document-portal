@@ -1,5 +1,4 @@
 requests==2.31.0
-psycopg2-binary==2.9.9
-sqlalchemy==1.4.23
+pg8000==1.30.5
 python-dotenv==1.0.0
 python-dateutil==2.8.2
