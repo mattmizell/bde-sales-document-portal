@@ -3,7 +3,7 @@ Database Models for BDE Sales Document Portal
 Clean, optimized models for DocuSeal integration
 """
 
-from sqlalchemy import Column, String, Text, DateTime, Boolean, ForeignKey, JSON
+from sqlalchemy import Column, String, Text, DateTime, Boolean, ForeignKey, JSON, Integer
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -175,3 +175,69 @@ class DocumentTemplate(Base):
     
     def __repr__(self):
         return f"<DocumentTemplate(id={self.id}, name={self.template_name})>"
+
+# CRM Bridge Models
+class CRMContactsCache(Base):
+    """CRM contacts cache for fast lookups"""
+    __tablename__ = 'crm_contacts_cache'
+    
+    contact_id = Column(String(255), primary_key=True)
+    
+    # Name fields
+    name = Column(String(500))
+    first_name = Column(String(255))
+    last_name = Column(String(255))
+    
+    # Contact information
+    company_name = Column(String(500))
+    email = Column(String(255))
+    phone = Column(String(50))
+    address = Column(JSON)  # JSONB for address data
+    
+    # Cache metadata
+    sync_status = Column(String(50), default='synced')  # synced, pending_sync, failed
+    last_sync = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f"<CRMContact(id={self.contact_id}, name={self.name})>"
+
+class CRMWriteQueue(Base):
+    """Queue for CRM write operations"""
+    __tablename__ = 'crm_write_queue'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    
+    # Operation details
+    operation = Column(String(100), nullable=False)  # create_contact, update_contact
+    data = Column(JSON, nullable=False)
+    
+    # Status tracking
+    status = Column(String(50), default='pending')  # pending, processing, completed, failed
+    attempts = Column(Integer, default=0)
+    max_attempts = Column(Integer, default=5)
+    error_message = Column(Text)
+    
+    # Timestamps
+    created_at = Column(DateTime, default=datetime.utcnow)
+    processed_at = Column(DateTime)
+    
+    def __repr__(self):
+        return f"<CRMWriteQueue(id={self.id}, operation={self.operation}, status={self.status})>"
+
+class CRMBridgeAuditLog(Base):
+    """Audit log for CRM bridge operations"""
+    __tablename__ = 'crm_bridge_audit_log'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    
+    # Operation details
+    app_name = Column(String(100))
+    operation = Column(String(100), nullable=False)
+    details = Column(JSON)
+    
+    # Timestamp
+    timestamp = Column(DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f"<CRMAuditLog(id={self.id}, app={self.app_name}, operation={self.operation})>"

@@ -30,8 +30,10 @@ import httpx
 import psycopg2
 from fastapi import HTTPException
 from pydantic import BaseModel, EmailStr
+from sqlalchemy import text
 
-from database.connection import get_db_context
+from database.connection import get_db_context, SessionLocal
+from database.models import CRMContactsCache
 
 logger = logging.getLogger(__name__)
 
@@ -86,22 +88,23 @@ class CRMBridge:
         
         try:
             with get_db_context() as db:
-                # Build dynamic query based on filters
+                # Build dynamic query based on filters using named parameters
                 where_conditions = []
-                params = []
+                params = {}
                 
                 if search_query:
                     where_conditions.append(
-                        "(name ILIKE %s OR company_name ILIKE %s OR email ILIKE %s)"
+                        "(name ILIKE :search1 OR company_name ILIKE :search2 OR email ILIKE :search3)"
                     )
-                    params.extend([f"%{search_query}%", f"%{search_query}%", f"%{search_query}%"])
+                    search_term = f"%{search_query}%"
+                    params.update({"search1": search_term, "search2": search_term, "search3": search_term})
                 
                 if company_filter:
-                    where_conditions.append("company_name ILIKE %s")
-                    params.append(f"%{company_filter}%")
+                    where_conditions.append("company_name ILIKE :company_filter")
+                    params["company_filter"] = f"%{company_filter}%"
                 
                 where_clause = "WHERE " + " AND ".join(where_conditions) if where_conditions else ""
-                params.append(limit)
+                params["limit_val"] = limit
                 
                 query = f"""
                     SELECT 
@@ -122,10 +125,10 @@ class CRMBridge:
                     ORDER BY 
                         CASE WHEN last_sync > NOW() - INTERVAL '{CACHE_REFRESH_HOURS} hours' THEN 1 ELSE 2 END,
                         COALESCE(name, CONCAT(first_name, ' ', last_name))
-                    LIMIT %s
+                    LIMIT :limit_val
                 """
                 
-                result = db.execute(query, params)
+                result = db.execute(text(query), params)
                 contacts = result.fetchall()
                 
                 return [
@@ -154,7 +157,7 @@ class CRMBridge:
         
         try:
             with get_db_context() as db:
-                query = """
+                query = f"""
                     SELECT 
                         contact_id, 
                         COALESCE(name, CONCAT(first_name, ' ', last_name)) as full_name,
@@ -166,13 +169,13 @@ class CRMBridge:
                         address, 
                         created_at, 
                         last_sync,
-                        CASE WHEN last_sync > NOW() - INTERVAL %s 
+                        CASE WHEN last_sync > NOW() - INTERVAL '{CACHE_REFRESH_HOURS} hours' 
                              THEN 'fresh' ELSE 'stale' END as cache_status
                     FROM crm_contacts_cache 
-                    WHERE contact_id = %s
+                    WHERE contact_id = :contact_id
                 """
                 
-                result = db.execute(query, (f"{CACHE_REFRESH_HOURS} hours", contact_id))
+                result = db.execute(text(query), {"contact_id": contact_id})
                 row = result.fetchone()
                 
                 if not row:
@@ -306,20 +309,20 @@ class CRMBridge:
         try:
             with get_db_context() as db:
                 # Total contacts
-                total_result = db.execute("SELECT COUNT(*) FROM crm_contacts_cache")
+                total_result = db.execute(text("SELECT COUNT(*) FROM crm_contacts_cache"))
                 total_contacts = total_result.fetchone()[0]
                 
                 # Fresh contacts (last 24 hours)
-                fresh_result = db.execute(
+                fresh_result = db.execute(text(
                     f"SELECT COUNT(*) FROM crm_contacts_cache WHERE last_sync > NOW() - INTERVAL '{CACHE_REFRESH_HOURS} hours'"
-                )
+                ))
                 fresh_contacts = fresh_result.fetchone()[0]
                 
                 # Stale contacts (need refresh)
                 stale_contacts = total_contacts - fresh_contacts
                 
                 # Last sync time
-                last_sync_result = db.execute("SELECT MAX(last_sync) FROM crm_contacts_cache")
+                last_sync_result = db.execute(text("SELECT MAX(last_sync) FROM crm_contacts_cache"))
                 last_sync = last_sync_result.fetchone()[0]
                 
                 return {
@@ -356,7 +359,7 @@ class CRMBridge:
                         last_sync = EXCLUDED.last_sync
                 """
                 
-                db.execute(upsert_query, (
+                db.execute(text(upsert_query), (
                     contact_id,
                     contact_data.get("name"),
                     contact_data.get("first_name"),

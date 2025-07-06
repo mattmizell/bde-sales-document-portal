@@ -15,6 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, EmailStr
+from sqlalchemy import text
 import uvicorn
 
 from database.connection import get_db_session
@@ -51,6 +52,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include routers
+app.include_router(crm_router)
 
 # Static files for any frontend assets
 # app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -90,7 +94,7 @@ async def health_check():
     # Test database connection
     try:
         db = next(get_db_session())
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))
         db_status = "healthy"
     except Exception as e:
         db_status = f"error: {str(e)}"
@@ -422,11 +426,14 @@ async def startup_event():
     logger.info("🎉 BDE Sales Document Portal ready!")
 
 if __name__ == "__main__":
-    # For local development
+    # Get port from environment (Render sets PORT)
+    port = int(os.getenv("PORT", 8000))
+    
+    # For local development and production
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=8000,
-        reload=True,
+        port=port,
+        reload=False,  # Disable reload in production
         log_level="info"
     )

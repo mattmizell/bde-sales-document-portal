@@ -13,10 +13,11 @@ from sqlalchemy.pool import QueuePool
 
 logger = logging.getLogger(__name__)
 
-# Database URL from environment
+# Database URL from environment (Render will set this automatically)
 DATABASE_URL = os.getenv(
     'DATABASE_URL',
-    'postgresql://portal_user:password@localhost:5432/sales_portal_dev'
+    # Fallback for local development only
+    'postgresql://sales_portal_user:flOFZjisR0WKPRnH91ExmmSnvljXPCDR@dpg-d1kjp1h5pdvs73aunge0-a.oregon-postgres.render.com/sales_portal_production'
 )
 
 # Create SQLAlchemy engine
