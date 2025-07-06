@@ -37,7 +37,8 @@ def get_db_connection():
             port=parsed.port or 5432,
             user=parsed.username,
             password=parsed.password,
-            database=parsed.path[1:]  # Remove leading slash
+            database=parsed.path[1:],  # Remove leading slash
+            ssl_context=True  # Enable SSL for Render PostgreSQL
         )
     except Exception as e:
         logger.error(f"Database connection failed: {e}")
