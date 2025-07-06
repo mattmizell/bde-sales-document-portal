@@ -104,7 +104,8 @@ def create_contact_in_lacrm(name, email=None, phone=None, company_name=None, add
             'Email': email or "",
             'Phone': phone or "", 
             'CompanyName': company_name or "",
-            'Address': address or ""
+            'Address': address or "",
+            'IsCompany': 'true' if company_name else 'false'
         }
         
         response = requests.get(
