@@ -21,12 +21,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Configuration
-LACRM_API_KEY = os.getenv("LACRM_API_KEY", "1073223-4036284360051868673733029852600-hzOnMMgwOvTV86XHs9c4H3gF5I7aTwO33PJSRXk9yQT957IY1W")
+LACRM_API_KEY = os.getenv("LACRM_API_KEY")
 LACRM_BASE_URL = os.getenv("LACRM_BASE_URL", "https://api.lessannoyingcrm.com/v2/")
-DATABASE_URL = os.getenv(
-    'DATABASE_URL',
-    'postgresql://sales_portal_user:flOFZjisR0WKPRnH91ExmmSnvljXPCDR@dpg-d1kjp1h5pdvs73aunge0-a.oregon-postgres.render.com/sales_portal_production'
-)
+DATABASE_URL = os.getenv('DATABASE_URL')
 
 def get_db_connection():
     """Get PostgreSQL connection"""

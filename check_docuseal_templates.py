@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DOCUSEAL_SERVICE_URL = "https://bde-docuseal-selfhosted.onrender.com"
-DOCUSEAL_API_TOKEN = "mHVsKRBH4EWVPEAxZ4nsVCa1WmAjZr4hhxj2MBWyCns"
+DOCUSEAL_API_TOKEN = os.getenv("DOCUSEAL_API_TOKEN")
 
 headers = {
     "X-Auth-Token": DOCUSEAL_API_TOKEN,

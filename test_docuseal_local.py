@@ -12,7 +12,7 @@ load_dotenv()
 
 # Test configuration
 DOCUSEAL_SERVICE_URL = os.getenv("DOCUSEAL_SERVICE_URL", "https://bde-docuseal-selfhosted.onrender.com")
-DOCUSEAL_API_TOKEN = os.getenv("DOCUSEAL_API_TOKEN", "mHVsKRBH4EWVPEAxZ4nsVCa1WmAjZr4hhxj2MBWyCns")
+DOCUSEAL_API_TOKEN = os.getenv("DOCUSEAL_API_TOKEN")
 
 print("🧪 Testing DocuSeal API Configuration")
 print("=" * 50)

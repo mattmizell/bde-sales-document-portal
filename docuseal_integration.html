@@ -511,21 +511,7 @@
             } else if (template === 'p66_loi' || template === 'vp_loi') {
                 prefilledData = {
                     ...baseData,
-                    // Dealer Information
-                    dealer_business_name: selectedContact.company_name || '',
-                    retail_store_address: selectedContact.address?.street || '',
-                    dealer_city: selectedContact.address?.city || '',
-                    dealer_state: selectedContact.address?.state || '',
-                    dealer_zip: selectedContact.address?.zip || '',
-                    
-                    // Fuel Volumes
-                    gasoline_gallons: customFields.AnnualGasolineVolume || '',
-                    diesel_gallons: customFields.AnnualDieselVolume || '',
-                    premium_gasoline_gallons: customFields.PremiumGasolineVolume || '',
-                    racing_fuel_gallons: customFields.RacingFuelVolume || '',
-                    
-                    // Contract Details
-                    contract_term: customFields.ContractTerm || '10',
+                    // Contract Dates
                     proposed_date: new Date().toLocaleDateString(),
                     valid_date: (() => {
                         const validDate = new Date();
@@ -533,10 +519,21 @@
                         return validDate.toLocaleDateString();
                     })(),
                     
-                    // Incentive Values
-                    site_incentive_value: customFields.SiteIncentiveValue || '',
-                    performance_incentive_value: customFields.PerformanceIncentiveValue || '',
-                    marketing_support_value: customFields.MarketingSupportValue || ''
+                    // Business Information (using DocuSeal field names)
+                    business_name: selectedContact.company_name || '',
+                    business_address: selectedContact.address?.street || '',
+                    business_city: selectedContact.address?.city || '',
+                    business_state: selectedContact.address?.state || '',
+                    business_zip: selectedContact.address?.zip || '',
+                    
+                    // Fuel Volumes (using DocuSeal field names)
+                    unl_gals_per_mth: customFields.AnnualGasolineVolume || '',
+                    diesel_gals_per_month: customFields.AnnualDieselVolume || '',
+                    
+                    // Incentive fields - leave blank for negotiation
+                    site_incentive: '',
+                    site_specific_incentive: '',
+                    rebate: ''
                 };
             } else {
                 // Default to customer setup fields
@@ -576,10 +573,10 @@
                 };
             } else if (template === 'p66_loi' || template === 'vp_loi') {
                 categories = {
-                    'Dealer Information': ['dealer_business_name', 'retail_store_address', 'dealer_city', 'dealer_state', 'dealer_zip'],
-                    'Fuel Volumes': ['gasoline_gallons', 'diesel_gallons', 'premium_gasoline_gallons', 'racing_fuel_gallons'],
-                    'Contract Details': ['contract_term', 'proposed_date', 'valid_date'],
-                    'Incentives': ['site_incentive_value', 'performance_incentive_value', 'marketing_support_value'],
+                    'Contract Details': ['proposed_date', 'valid_date'],
+                    'Business Information': ['business_name', 'business_address', 'business_city', 'business_state', 'business_zip'],
+                    'Fuel Volumes': ['unl_gals_per_mth', 'diesel_gals_per_month'],
+                    'Incentives (Negotiable)': ['site_incentive', 'site_specific_incentive', 'rebate'],
                     'Signer': ['signer_name', 'signer_title', 'signature_date']
                 };
             } else {
