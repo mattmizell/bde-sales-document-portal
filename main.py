@@ -897,8 +897,8 @@ class CRMHandler(BaseHTTPRequestHandler):
                 actual_template_id = template_mapping.get(template_id, template_id)
                 
                 # Call DocuSeal API
-                docuseal_api_url = os.getenv("DOCUSEAL_API_URL", "https://bde-docuseal-selfhosted.onrender.com/api")
-                docuseal_api_key = os.getenv("DOCUSEAL_API_KEY", "mHVsKRBH4EWVPEAxZ4nsVCa1WmAjZr4hhxj2MBWyCns")
+                docuseal_api_url = os.getenv("DOCUSEAL_SERVICE_URL", "https://bde-docuseal-selfhosted.onrender.com") + "/api"
+                docuseal_api_key = os.getenv("DOCUSEAL_API_TOKEN", "")
                 
                 if not docuseal_api_key:
                     self.send_json_response({"error": "DocuSeal API key not configured"}, status=500)
