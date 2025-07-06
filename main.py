@@ -94,7 +94,7 @@ async def health_check():
     # Test database connection
     try:
         db = next(get_db_session())
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))
         db_status = "healthy"
     except Exception as e:
         db_status = f"error: {str(e)}"
@@ -279,7 +279,7 @@ async def handle_docuseal_webhook(
             workflow_id=workflow.id,
             event_type=webhook_data.event_type,
             event_description=f"DocuSeal event: {webhook_data.event_type}",
-            event_data=webhook_data.dict(),
+            event_data=webhook_data.model_dump(),
             user_email=webhook_data.submitter_email
         )
         

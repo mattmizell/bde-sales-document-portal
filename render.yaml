@@ -4,7 +4,8 @@
 services:
   - type: web
     name: bde-sales-document-portal
-    runtime: python3
+    env: python
+    pythonVersion: "3.11"
     buildCommand: pip install -r requirements.txt
     startCommand: python main.py
     
