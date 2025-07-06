@@ -105,7 +105,8 @@ def create_contact_in_lacrm(name, email=None, phone=None, company_name=None, add
             'Phone': phone or "", 
             'CompanyName': company_name or "",
             'Address': address or "",
-            'IsCompany': 'true' if company_name else 'false'
+            'IsCompany': 'true' if company_name else 'false',
+            'AssignedTo': user_code  # Assign to the API user
         }
         
         response = requests.get(
