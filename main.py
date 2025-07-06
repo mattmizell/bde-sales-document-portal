@@ -14,6 +14,7 @@ from urllib.parse import parse_qs, urlparse
 import requests
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from crm_sync_service import trigger_sync, get_sync_status, start_sync_service
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -146,6 +147,9 @@ def create_contact_in_lacrm(name, email=None, phone=None, company_name=None, add
         # Update local cache immediately
         cache_contact_data(contact_id, name, email, phone, company_name, address)
         
+        # Trigger background sync to update cache with latest LACRM data
+        trigger_sync()
+        
         logger.info(f"✅ Contact created in LACRM: {contact_id}")
         
         return {
@@ -203,6 +207,9 @@ def update_contact_in_lacrm(contact_id, name=None, email=None, phone=None, compa
         
         # Update local cache
         update_cached_contact(contact_id, name, email, phone, company_name, address)
+        
+        # Trigger background sync to update cache with latest LACRM data
+        trigger_sync()
         
         logger.info(f"✅ Contact updated in LACRM: {contact_id}")
         
@@ -746,6 +753,22 @@ class CRMHandler(BaseHTTPRequestHandler):
                     }
                 })
                 
+            elif path == "/api/v1/crm/sync/status":
+                # Get sync service status
+                sync_status = get_sync_status()
+                self.send_json_response({
+                    "sync_status": sync_status,
+                    "timestamp": datetime.now().isoformat()
+                })
+                
+            elif path == "/api/v1/crm/sync/trigger":
+                # Trigger immediate sync
+                trigger_sync()
+                self.send_json_response({
+                    "message": "Sync triggered successfully",
+                    "timestamp": datetime.now().isoformat()
+                })
+                
             elif path.startswith("/api/v1/crm/contacts/") and path.endswith("/notes"):
                 # Get notes for contact
                 contact_id = path.split("/")[-2]
@@ -1061,6 +1084,12 @@ def run_server():
     logger.info(f"🚀 BDE CRM Bridge starting on port {port}")
     logger.info(f"📊 Health check: http://localhost:{port}/health")
     logger.info(f"🔍 Search contacts: http://localhost:{port}/api/v1/crm/contacts")
+    logger.info(f"🔄 Sync status: http://localhost:{port}/api/v1/crm/sync/status")
+    logger.info(f"⚡ Trigger sync: http://localhost:{port}/api/v1/crm/sync/trigger")
+    
+    # Start the background sync service
+    logger.info("🔄 Starting CRM sync service...")
+    start_sync_service()
     
     server = HTTPServer(('0.0.0.0', port), CRMHandler)
     
