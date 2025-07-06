@@ -96,18 +96,33 @@ def create_contact_in_lacrm(name, email=None, phone=None, company_name=None, add
         # Extract UserCode from API key
         user_code = LACRM_API_KEY.split('-')[0]  # Gets '1073223'
         
+        # Split name into first/last if provided as full name
+        first_name = ""
+        last_name = ""
+        if name:
+            parts = name.split(' ', 1)
+            first_name = parts[0]
+            last_name = parts[1] if len(parts) > 1 else ""
+        
         params = {
             'APIToken': LACRM_API_KEY,
             'UserCode': user_code,
             'Function': 'CreateContact',
-            'Name': name or "",
-            'Email': email or "",
-            'Phone': phone or "", 
+            'FirstName': first_name,
+            'LastName': last_name,
             'CompanyName': company_name or "",
-            'Address': address or "",
             'IsCompany': 'true' if company_name else 'false',
-            'AssignedTo': user_code  # Assign to the API user
+            'AssignedTo': user_code
         }
+        
+        # Add optional fields only if provided (LACRM is picky about format)
+        if email:
+            params['Email'] = f'[{{"Text":"{email}","Type":"Work"}}]'
+        if phone:
+            params['Phone'] = f'[{{"Text":"{phone}","Type":"Work"}}]'
+        if address:
+            # Simple address - just put it in Street field
+            params['Address'] = f'[{{"Street":"{address}","Type":"Work"}}]'
         
         response = requests.get(
             LACRM_BASE_URL,
