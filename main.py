@@ -940,24 +940,22 @@ class CRMHandler(BaseHTTPRequestHandler):
                     self.send_json_response({"error": "template_id and contact_email are required"}, status=400)
                     return
                 
-                # Map template names to actual DocuSeal template IDs
+                # Map template names to actual DocuSeal template IDs (numeric)
                 template_mapping = {
-                    "customer_setup": os.getenv("DOCUSEAL_CUSTOMER_SETUP_TEMPLATE_ID", "VmPsZnK4ARbXET"),
-                    "eft_auth": os.getenv("DOCUSEAL_EFT_TEMPLATE_ID", ""),
-                    "p66_loi": os.getenv("DOCUSEAL_P66_LOI_TEMPLATE_ID", ""),
-                    "vp_loi": os.getenv("DOCUSEAL_VP_LOI_TEMPLATE_ID", "")
+                    "customer_setup": 1,  # Customer Setup Form
+                    "eft_auth": 2,  # EFT Authorization (if exists)
+                    "p66_loi": 3,  # P66 LOI (if exists)
+                    "vp_loi": 4  # VP Racing LOI (if exists)
                 }
                 
-                actual_template_id = template_mapping.get(template_id, template_id)
+                # Get numeric template ID, default to 1 if not found
+                actual_template_id = template_mapping.get(template_id, 1)
                 
                 # Call DocuSeal API
                 docuseal_api_url = os.getenv("DOCUSEAL_SERVICE_URL", "https://bde-docuseal-selfhosted.onrender.com") + "/api"
-                docuseal_api_key = os.getenv("DOCUSEAL_API_TOKEN", "")
+                docuseal_api_key = os.getenv("DOCUSEAL_API_TOKEN", "mHVsKRBH4EWVPEAxZ4nsVCa1WmAjZr4hhxj2MBWyCns")
                 
-                if not docuseal_api_key:
-                    self.send_json_response({"error": "DocuSeal API key not configured"}, status=500)
-                    return
-                
+                # DocuSeal expects numeric template_id
                 payload = {
                     "template_id": actual_template_id,
                     "send_email": False,  # Don't auto-send, return link instead
@@ -965,7 +963,7 @@ class CRMHandler(BaseHTTPRequestHandler):
                         "role": "First Party",
                         "email": contact_email,
                         "name": contact_name or "Customer",
-                        "values": prefilled_data
+                        "values": prefilled_data  # Back to 'values' based on API response
                     }]
                 }
                 
@@ -982,12 +980,22 @@ class CRMHandler(BaseHTTPRequestHandler):
                         timeout=30
                     )
                     
-                    if response.status_code == 201:
+                    if response.status_code == 200 or response.status_code == 201:
+                        # DocuSeal returns an array of submitters
                         result = response.json()
-                        # Get the signing URL from the first submitter
                         signing_url = None
-                        if result.get("submitters") and len(result["submitters"]) > 0:
-                            signing_url = result["submitters"][0].get("embed_src")
+                        submission_id = None
+                        
+                        # Handle array response
+                        if isinstance(result, list) and len(result) > 0:
+                            first_submitter = result[0]
+                            signing_url = first_submitter.get("slug")
+                            submission_id = first_submitter.get("id")
+                            
+                            # Build the full signing URL
+                            if signing_url:
+                                docuseal_base = os.getenv("DOCUSEAL_SERVICE_URL", "https://bde-docuseal-selfhosted.onrender.com")
+                                signing_url = f"{docuseal_base}/s/{signing_url}"
                         
                         # Log successful creation
                         if contact_id:
@@ -996,7 +1004,7 @@ class CRMHandler(BaseHTTPRequestHandler):
                         self.send_json_response({
                             "success": True,
                             "signing_url": signing_url,
-                            "submission_id": result.get("id"),
+                            "submission_id": submission_id,
                             "template_id": actual_template_id,
                             "message": "DocuSeal form created successfully"
                         })
