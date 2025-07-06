@@ -32,13 +32,20 @@ def get_db_connection():
     try:
         # Parse DATABASE_URL for pg8000
         parsed = parse_url(DATABASE_URL)
+        
+        # pg8000 SSL configuration for Render
+        import ssl
+        ssl_context = ssl.create_default_context()
+        ssl_context.check_hostname = False
+        ssl_context.verify_mode = ssl.CERT_NONE
+        
         return pg8000.connect(
             host=parsed.hostname,
             port=parsed.port or 5432,
             user=parsed.username,
             password=parsed.password,
             database=parsed.path[1:],  # Remove leading slash
-            ssl_context=True  # Enable SSL for Render PostgreSQL
+            ssl_context=ssl_context  # Proper SSL context for Render
         )
     except Exception as e:
         logger.error(f"Database connection failed: {e}")
