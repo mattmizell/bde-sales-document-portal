@@ -185,8 +185,27 @@
             }
             
             try {
-                const response = await fetch(`${CRM_API}/api/contacts/search?q=${encodeURIComponent(searchTerm)}`);
-                const contacts = await response.json();
+                // Use the correct endpoint and method
+                const response = await fetch(`${CRM_API}/api/v1/crm/contacts/search`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: searchTerm,
+                        limit: 20
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('Search result:', result);
+                
+                // Extract contacts from the response structure
+                const contacts = result.contacts || result.data || result || [];
                 
                 displaySearchResults(contacts);
             } catch (error) {
@@ -198,19 +217,32 @@
         function displaySearchResults(contacts) {
             const resultsDiv = document.getElementById('searchResults');
             
-            if (!contacts || contacts.length === 0) {
+            // Ensure contacts is an array
+            if (!Array.isArray(contacts)) {
+                console.warn('Expected array, got:', typeof contacts, contacts);
+                resultsDiv.innerHTML = '<p>Invalid search results format</p>';
+                return;
+            }
+            
+            if (contacts.length === 0) {
                 resultsDiv.innerHTML = '<p>No contacts found</p>';
                 return;
             }
             
             let html = '<h3>Search Results:</h3>';
             contacts.forEach(contact => {
+                // Handle different field name formats from your CRM
+                const companyName = contact.companyName || contact.company_name || contact.Company;
+                const contactName = contact.name || contact.contactName || contact.Name;
+                const email = contact.email || contact.Email;
+                const phone = contact.phone || contact.Phone;
+                
                 html += `
                     <div class="contact-result" onclick="selectContact(${JSON.stringify(contact).replace(/"/g, '&quot;')})">
-                        <strong>${contact.companyName || contact.name}</strong><br>
-                        ${contact.name ? 'Contact: ' + contact.name + '<br>' : ''}
-                        ${contact.email ? 'Email: ' + contact.email + '<br>' : ''}
-                        ${contact.phone ? 'Phone: ' + contact.phone : ''}
+                        <strong>${companyName || contactName || 'Unknown'}</strong><br>
+                        ${contactName && companyName ? 'Contact: ' + contactName + '<br>' : ''}
+                        ${email ? 'Email: ' + email + '<br>' : ''}
+                        ${phone ? 'Phone: ' + phone : ''}
                     </div>
                 `;
             });
@@ -258,43 +290,117 @@
             // Map CRM data to DocuSeal fields
             const customFields = selectedContact.customFields || {};
             
-            prefilledData = {
-                // Business Information
-                business_name: selectedContact.companyName || '',
-                dba: customFields.DBA || '',
-                fein: customFields.FederalTaxID || '',
-                state_id: customFields.StateTaxID || '',
-                
-                // Address Information
-                billing_address: selectedContact.address?.street || '',
-                billing_city: selectedContact.address?.city || '',
-                billing_state: selectedContact.address?.state || '',
-                billing_zip: selectedContact.address?.zip || '',
-                
-                // Contact Information
-                billing_phone: selectedContact.phone || '',
-                billing_fax: customFields.FaxNumber || '',
-                
-                // Business Details
-                years_in_biz: customFields.YearsInBusiness || '',
-                number_employees: customFields.NumberOfEmployees || '',
-                estimated_ann_diesel: customFields.AnnualDieselVolume || '',
-                estimated_ann_unl: customFields.AnnualGasolineVolume || '',
-                credit_request: customFields.CreditAmountRequested || '',
-                
-                // Key Contacts
-                purchase_mgr_name: customFields.PurchasingManagerName || '',
-                acct_payable_name: customFields.AccountsPayableName || '',
-                purchasing_email: customFields.PurchasingEmail || '',
-                purchasing_phone: customFields.PurchasingPhone || '',
-                accounts_payable_email: customFields.AccountsPayableEmail || '',
-                accounts_payable_phone: customFields.AccountsPayablePhone || '',
-                
-                // Signer Information
+            // Base data object
+            let baseData = {
+                // Common signer fields
                 signer_name: selectedContact.name || '',
                 signer_title: selectedContact.title || '',
                 signature_date: new Date().toLocaleDateString()
             };
+            
+            // Template-specific field mapping
+            if (template === 'customer_setup') {
+                prefilledData = {
+                    ...baseData,
+                    // Business Information
+                    business_name: selectedContact.companyName || '',
+                    dba: customFields.DBA || '',
+                    fein: customFields.FederalTaxID || '',
+                    state_id: customFields.StateTaxID || '',
+                    
+                    // Address Information
+                    billing_address: selectedContact.address?.street || '',
+                    billing_city: selectedContact.address?.city || '',
+                    billing_state: selectedContact.address?.state || '',
+                    billing_zip: selectedContact.address?.zip || '',
+                    
+                    // Contact Information
+                    billing_phone: selectedContact.phone || '',
+                    billing_fax: customFields.FaxNumber || '',
+                    
+                    // Business Details
+                    years_in_biz: customFields.YearsInBusiness || '',
+                    number_employees: customFields.NumberOfEmployees || '',
+                    estimated_ann_diesel: customFields.AnnualDieselVolume || '',
+                    estimated_ann_unl: customFields.AnnualGasolineVolume || '',
+                    credit_request: customFields.CreditAmountRequested || '',
+                    
+                    // Key Contacts
+                    purchase_mgr_name: customFields.PurchasingManagerName || '',
+                    acct_payable_name: customFields.AccountsPayableName || '',
+                    purchasing_email: customFields.PurchasingEmail || '',
+                    purchasing_phone: customFields.PurchasingPhone || '',
+                    accounts_payable_email: customFields.AccountsPayableEmail || '',
+                    accounts_payable_phone: customFields.AccountsPayablePhone || ''
+                };
+            } else if (template === 'eft_auth') {
+                prefilledData = {
+                    ...baseData,
+                    // Customer Information
+                    customer_name: selectedContact.companyName || '',
+                    fein: customFields.FederalTaxID || '',
+                    business_address: selectedContact.address?.street || '',
+                    business_address_city: selectedContact.address?.city || '',
+                    business_address_state: selectedContact.address?.state || '',
+                    business_address_zip: selectedContact.address?.zip || '',
+                    
+                    // Accounting Contact
+                    accounting_contact_name: customFields.AccountsPayableName || selectedContact.name || '',
+                    accounting_contact_phone: customFields.AccountsPayablePhone || selectedContact.phone || '',
+                    accounting_contact_email: customFields.AccountsPayableEmail || selectedContact.email || '',
+                    accounting_contact_fax: customFields.FaxNumber || '',
+                    
+                    // Bank Information
+                    bank_name: customFields.BankName || '',
+                    bank_address: customFields.BankAddress || '',
+                    bank_city: customFields.BankCity || '',
+                    bank_state: customFields.BankState || '',
+                    bank_zip: customFields.BankZip || '',
+                    bank_phone: customFields.BankPhone || '',
+                    bank_fax: customFields.BankFax || '',
+                    routing_number: customFields.RoutingNumber || '',
+                    your_name_at_bank: customFields.NameAtBank || selectedContact.companyName || '',
+                    bank_contact: customFields.BankContact || '',
+                    
+                    // Authorization
+                    authorized_name: selectedContact.name || '',
+                    authorized_title: selectedContact.title || '',
+                    effective_date: new Date().toLocaleDateString()
+                };
+            } else if (template === 'p66_loi' || template === 'vp_loi') {
+                prefilledData = {
+                    ...baseData,
+                    // Dealer Information
+                    dealer_business_name: selectedContact.companyName || '',
+                    retail_store_address: selectedContact.address?.street || '',
+                    dealer_city: selectedContact.address?.city || '',
+                    dealer_state: selectedContact.address?.state || '',
+                    dealer_zip: selectedContact.address?.zip || '',
+                    
+                    // Fuel Volumes
+                    gasoline_gallons: customFields.AnnualGasolineVolume || '',
+                    diesel_gallons: customFields.AnnualDieselVolume || '',
+                    premium_gasoline_gallons: customFields.PremiumGasolineVolume || '',
+                    racing_fuel_gallons: customFields.RacingFuelVolume || '',
+                    
+                    // Contract Details
+                    contract_term: customFields.ContractTerm || '10',
+                    proposed_date: new Date().toLocaleDateString(),
+                    valid_date: (() => {
+                        const validDate = new Date();
+                        validDate.setDate(validDate.getDate() + 30);
+                        return validDate.toLocaleDateString();
+                    })(),
+                    
+                    // Incentive Values
+                    site_incentive_value: customFields.SiteIncentiveValue || '',
+                    performance_incentive_value: customFields.PerformanceIncentiveValue || '',
+                    marketing_support_value: customFields.MarketingSupportValue || ''
+                };
+            } else {
+                // Default to customer setup fields
+                prefilledData = baseData;
+            }
             
             // Display preview
             displayFormPreview(prefilledData);
@@ -307,15 +413,39 @@
             const previewDiv = document.getElementById('formPreview');
             let html = '<div class="form-preview"><h3>Pre-filled Field Values:</h3>';
             
-            // Group fields by category
-            const categories = {
-                'Business Information': ['business_name', 'dba', 'fein', 'state_id'],
-                'Address': ['billing_address', 'billing_city', 'billing_state', 'billing_zip'],
-                'Contact': ['billing_phone', 'billing_fax'],
-                'Business Details': ['years_in_biz', 'number_employees', 'estimated_ann_diesel', 'estimated_ann_unl', 'credit_request'],
-                'Key Contacts': ['purchase_mgr_name', 'acct_payable_name', 'purchasing_email', 'purchasing_phone', 'accounts_payable_email', 'accounts_payable_phone'],
-                'Signer': ['signer_name', 'signer_title', 'signature_date']
-            };
+            // Group fields by category based on template
+            const template = document.getElementById('templateSelect').value;
+            let categories = {};
+            
+            if (template === 'customer_setup') {
+                categories = {
+                    'Business Information': ['business_name', 'dba', 'fein', 'state_id'],
+                    'Address': ['billing_address', 'billing_city', 'billing_state', 'billing_zip'],
+                    'Contact': ['billing_phone', 'billing_fax'],
+                    'Business Details': ['years_in_biz', 'number_employees', 'estimated_ann_diesel', 'estimated_ann_unl', 'credit_request'],
+                    'Key Contacts': ['purchase_mgr_name', 'acct_payable_name', 'purchasing_email', 'purchasing_phone', 'accounts_payable_email', 'accounts_payable_phone'],
+                    'Signer': ['signer_name', 'signer_title', 'signature_date']
+                };
+            } else if (template === 'eft_auth') {
+                categories = {
+                    'Customer Information': ['customer_name', 'fein', 'business_address', 'business_address_city', 'business_address_state', 'business_address_zip'],
+                    'Accounting Contact': ['accounting_contact_name', 'accounting_contact_phone', 'accounting_contact_email', 'accounting_contact_fax'],
+                    'Bank Information': ['bank_name', 'bank_address', 'bank_city', 'bank_state', 'bank_zip', 'bank_phone', 'bank_fax', 'routing_number', 'your_name_at_bank', 'bank_contact'],
+                    'Authorization': ['authorized_name', 'authorized_title', 'effective_date', 'signature_date']
+                };
+            } else if (template === 'p66_loi' || template === 'vp_loi') {
+                categories = {
+                    'Dealer Information': ['dealer_business_name', 'retail_store_address', 'dealer_city', 'dealer_state', 'dealer_zip'],
+                    'Fuel Volumes': ['gasoline_gallons', 'diesel_gallons', 'premium_gasoline_gallons', 'racing_fuel_gallons'],
+                    'Contract Details': ['contract_term', 'proposed_date', 'valid_date'],
+                    'Incentives': ['site_incentive_value', 'performance_incentive_value', 'marketing_support_value'],
+                    'Signer': ['signer_name', 'signer_title', 'signature_date']
+                };
+            } else {
+                categories = {
+                    'Signer': ['signer_name', 'signer_title', 'signature_date']
+                };
+            }
             
             for (const [category, fields] of Object.entries(categories)) {
                 html += `<h4>${category}</h4><div class="field-mapping">`;
