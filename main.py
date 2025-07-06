@@ -338,6 +338,281 @@ def update_cached_contact(contact_id, name, email, phone, company_name, address)
     except Exception as e:
         logger.error(f"❌ Cache update failed: {e}")
 
+def attach_document_to_contact(contact_id, file_url, file_name, document_type="Document"):
+    """Attach document to contact in LACRM"""
+    try:
+        payload = {
+            "Function": "UploadFile",
+            "Parameters": {
+                "ContactId": contact_id,
+                "FileUrl": file_url,
+                "FileName": file_name,
+                "FileType": document_type
+            }
+        }
+        
+        response = requests.post(
+            LACRM_BASE_URL,
+            headers={"Authorization": f"Bearer {LACRM_API_KEY}"},
+            json=payload,
+            timeout=30
+        )
+        
+        if response.status_code != 200:
+            raise Exception(f"LACRM API error: {response.status_code} - {response.text}")
+        
+        result = response.json()
+        
+        if not result.get("Success"):
+            error_msg = result.get("Errors", "Unknown error")
+            raise Exception(f"LACRM document attachment failed: {error_msg}")
+        
+        file_id = result.get("FileId")
+        
+        logger.info(f"✅ Document attached to contact {contact_id}: {file_id}")
+        
+        return {
+            "file_id": file_id,
+            "contact_id": contact_id,
+            "file_name": file_name,
+            "file_url": file_url,
+            "document_type": document_type,
+            "attached_at": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Document attachment failed: {e}")
+        raise
+
+def attach_document_to_company(company_id, file_url, file_name, document_type="Document"):
+    """Attach document to company in LACRM"""
+    try:
+        payload = {
+            "Function": "UploadFile",
+            "Parameters": {
+                "CompanyId": company_id,
+                "FileUrl": file_url,
+                "FileName": file_name,
+                "FileType": document_type
+            }
+        }
+        
+        response = requests.post(
+            LACRM_BASE_URL,
+            headers={"Authorization": f"Bearer {LACRM_API_KEY}"},
+            json=payload,
+            timeout=30
+        )
+        
+        if response.status_code != 200:
+            raise Exception(f"LACRM API error: {response.status_code} - {response.text}")
+        
+        result = response.json()
+        
+        if not result.get("Success"):
+            error_msg = result.get("Errors", "Unknown error")
+            raise Exception(f"LACRM document attachment failed: {error_msg}")
+        
+        file_id = result.get("FileId")
+        
+        logger.info(f"✅ Document attached to company {company_id}: {file_id}")
+        
+        return {
+            "file_id": file_id,
+            "company_id": company_id,
+            "file_name": file_name,
+            "file_url": file_url,
+            "document_type": document_type,
+            "attached_at": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Document attachment failed: {e}")
+        raise
+
+def create_task_for_contact(contact_id, task_title, task_description="", due_date=None, priority="Normal"):
+    """Create follow-up task for contact in LACRM"""
+    try:
+        # Calculate due date if not provided (default 7 days from now)
+        if due_date is None:
+            from datetime import timedelta
+            due_date = (datetime.now() + timedelta(days=7)).strftime("%Y-%m-%d")
+        
+        payload = {
+            "Function": "CreateTask",
+            "Parameters": {
+                "ContactId": contact_id,
+                "Title": task_title,
+                "Description": task_description,
+                "DueDate": due_date,
+                "Priority": priority  # Normal, High, Low
+            }
+        }
+        
+        response = requests.post(
+            LACRM_BASE_URL,
+            headers={"Authorization": f"Bearer {LACRM_API_KEY}"},
+            json=payload,
+            timeout=30
+        )
+        
+        if response.status_code != 200:
+            raise Exception(f"LACRM API error: {response.status_code} - {response.text}")
+        
+        result = response.json()
+        
+        if not result.get("Success"):
+            error_msg = result.get("Errors", "Unknown error")
+            raise Exception(f"LACRM task creation failed: {error_msg}")
+        
+        task_id = result.get("TaskId")
+        
+        logger.info(f"✅ Task created for contact {contact_id}: {task_id}")
+        
+        return {
+            "task_id": task_id,
+            "contact_id": contact_id,
+            "title": task_title,
+            "description": task_description,
+            "due_date": due_date,
+            "priority": priority,
+            "created_at": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Task creation failed: {e}")
+        raise
+
+def schedule_calendar_event(contact_id, event_title, event_description="", event_date=None, duration_minutes=60):
+    """Schedule calendar event with contact in LACRM"""
+    try:
+        # Calculate event date if not provided (default tomorrow at 10 AM)
+        if event_date is None:
+            from datetime import timedelta
+            tomorrow = datetime.now() + timedelta(days=1)
+            event_date = tomorrow.replace(hour=10, minute=0, second=0).strftime("%Y-%m-%d %H:%M")
+        
+        payload = {
+            "Function": "CreateEvent",
+            "Parameters": {
+                "ContactId": contact_id,
+                "Title": event_title,
+                "Description": event_description,
+                "StartTime": event_date,
+                "DurationMinutes": duration_minutes
+            }
+        }
+        
+        response = requests.post(
+            LACRM_BASE_URL,
+            headers={"Authorization": f"Bearer {LACRM_API_KEY}"},
+            json=payload,
+            timeout=30
+        )
+        
+        if response.status_code != 200:
+            raise Exception(f"LACRM API error: {response.status_code} - {response.text}")
+        
+        result = response.json()
+        
+        if not result.get("Success"):
+            error_msg = result.get("Errors", "Unknown error")
+            raise Exception(f"LACRM event creation failed: {error_msg}")
+        
+        event_id = result.get("EventId")
+        
+        logger.info(f"✅ Event scheduled for contact {contact_id}: {event_id}")
+        
+        return {
+            "event_id": event_id,
+            "contact_id": contact_id,
+            "title": event_title,
+            "description": event_description,
+            "start_time": event_date,
+            "duration_minutes": duration_minutes,
+            "created_at": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Event creation failed: {e}")
+        raise
+
+def get_contact_documents(contact_id):
+    """Get all documents attached to a contact"""
+    try:
+        payload = {
+            "Function": "GetFiles",
+            "Parameters": {
+                "ContactId": contact_id
+            }
+        }
+        
+        response = requests.post(
+            LACRM_BASE_URL,
+            headers={"Authorization": f"Bearer {LACRM_API_KEY}"},
+            json=payload,
+            timeout=30
+        )
+        
+        if response.status_code != 200:
+            raise Exception(f"LACRM API error: {response.status_code} - {response.text}")
+        
+        result = response.json()
+        
+        if not result.get("Success"):
+            error_msg = result.get("Errors", "Unknown error")
+            raise Exception(f"LACRM documents retrieval failed: {error_msg}")
+        
+        documents = result.get("Result", [])
+        
+        return {
+            "contact_id": contact_id,
+            "documents": documents,
+            "count": len(documents)
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Documents retrieval failed: {e}")
+        raise
+
+def get_contact_tasks(contact_id):
+    """Get all tasks for a contact"""
+    try:
+        payload = {
+            "Function": "GetTasks",
+            "Parameters": {
+                "ContactId": contact_id
+            }
+        }
+        
+        response = requests.post(
+            LACRM_BASE_URL,
+            headers={"Authorization": f"Bearer {LACRM_API_KEY}"},
+            json=payload,
+            timeout=30
+        )
+        
+        if response.status_code != 200:
+            raise Exception(f"LACRM API error: {response.status_code} - {response.text}")
+        
+        result = response.json()
+        
+        if not result.get("Success"):
+            error_msg = result.get("Errors", "Unknown error")
+            raise Exception(f"LACRM tasks retrieval failed: {error_msg}")
+        
+        tasks = result.get("Result", [])
+        
+        return {
+            "contact_id": contact_id,
+            "tasks": tasks,
+            "count": len(tasks)
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Tasks retrieval failed: {e}")
+        raise
+
 class CRMHandler(BaseHTTPRequestHandler):
     """HTTP handler for CRM endpoints"""
     
@@ -349,23 +624,44 @@ class CRMHandler(BaseHTTPRequestHandler):
         try:
             if path == "/":
                 self.send_json_response({
-                    "service": "BDE CRM Bridge - Full Read/Write",
+                    "service": "BDE CRM Bridge - Document Routing & Task Management",
                     "status": "operational",
                     "timestamp": datetime.now().isoformat(),
                     "capabilities": {
-                        "read_operations": ["Search contacts", "Get contact details", "Get contact notes", "Cache statistics"],
-                        "write_operations": ["Create contacts", "Update contacts", "Add notes to contacts"],
+                        "contact_management": ["Search", "Create", "Update", "Get details"],
+                        "document_management": ["Attach to contacts", "Attach to companies", "Retrieve documents"],
+                        "task_scheduling": ["Create follow-up tasks", "Schedule calendar events", "Get task lists"],
+                        "note_management": ["Add notes", "Retrieve notes"],
                         "cache_management": ["Real-time cache updates", "LACRM API integration"]
+                    },
+                    "document_workflows": {
+                        "loi_completion": "Document signed → Attach to contact → Schedule follow-up",
+                        "eft_processing": "EFT form → Attach to company → Create processing task",
+                        "customer_onboarding": "Setup complete → All docs attached → Schedule onboarding call"
                     },
                     "endpoints": {
                         "health": "GET /health",
                         "crm_health": "GET /api/v1/crm/health",
-                        "list_contacts": "GET /api/v1/crm/contacts?limit=N&search=query",
-                        "search_contacts": "POST /api/v1/crm/contacts/search",
-                        "create_contact": "POST /api/v1/crm/contacts",
-                        "update_contact": "PUT /api/v1/crm/contacts/{id}",
-                        "get_notes": "GET /api/v1/crm/contacts/{id}/notes",
-                        "add_note": "POST /api/v1/crm/contacts/{id}/notes",
+                        "contacts": {
+                            "list": "GET /api/v1/crm/contacts?limit=N&search=query",
+                            "search": "POST /api/v1/crm/contacts/search",
+                            "create": "POST /api/v1/crm/contacts",
+                            "update": "PUT /api/v1/crm/contacts/{id}"
+                        },
+                        "notes": {
+                            "get": "GET /api/v1/crm/contacts/{id}/notes",
+                            "add": "POST /api/v1/crm/contacts/{id}/notes"
+                        },
+                        "documents": {
+                            "get_contact_docs": "GET /api/v1/crm/contacts/{id}/documents",
+                            "attach_to_contact": "POST /api/v1/crm/contacts/{id}/documents",
+                            "attach_to_company": "POST /api/v1/crm/companies/{id}/documents"
+                        },
+                        "tasks": {
+                            "get_contact_tasks": "GET /api/v1/crm/contacts/{id}/tasks",
+                            "create_task": "POST /api/v1/crm/contacts/{id}/tasks",
+                            "schedule_event": "POST /api/v1/crm/contacts/{id}/events"
+                        },
                         "stats": "GET /api/v1/crm/stats"
                     }
                 })
@@ -410,6 +706,18 @@ class CRMHandler(BaseHTTPRequestHandler):
                 # Get notes for contact
                 contact_id = path.split("/")[-2]
                 result = get_contact_notes(contact_id)
+                self.send_json_response(result)
+                
+            elif path.startswith("/api/v1/crm/contacts/") and path.endswith("/documents"):
+                # Get documents for contact
+                contact_id = path.split("/")[-2]
+                result = get_contact_documents(contact_id)
+                self.send_json_response(result)
+                
+            elif path.startswith("/api/v1/crm/contacts/") and path.endswith("/tasks"):
+                # Get tasks for contact
+                contact_id = path.split("/")[-2]
+                result = get_contact_tasks(contact_id)
                 self.send_json_response(result)
                 
             else:
@@ -477,6 +785,80 @@ class CRMHandler(BaseHTTPRequestHandler):
                     "success": True,
                     "note": result,
                     "message": "Note added successfully"
+                })
+                
+            elif path.startswith("/api/v1/crm/contacts/") and path.endswith("/documents"):
+                # Attach document to contact
+                contact_id = path.split("/")[-2]
+                file_url = data.get("file_url")
+                file_name = data.get("file_name")
+                document_type = data.get("document_type", "Document")
+                
+                if not file_url or not file_name:
+                    self.send_json_response({"error": "file_url and file_name are required"}, status=400)
+                    return
+                
+                result = attach_document_to_contact(contact_id, file_url, file_name, document_type)
+                self.send_json_response({
+                    "success": True,
+                    "document": result,
+                    "message": "Document attached successfully"
+                })
+                
+            elif path.startswith("/api/v1/crm/contacts/") and path.endswith("/tasks"):
+                # Create task for contact
+                contact_id = path.split("/")[-2]
+                task_title = data.get("task_title")
+                task_description = data.get("task_description", "")
+                due_date = data.get("due_date")  # YYYY-MM-DD format
+                priority = data.get("priority", "Normal")
+                
+                if not task_title:
+                    self.send_json_response({"error": "task_title is required"}, status=400)
+                    return
+                
+                result = create_task_for_contact(contact_id, task_title, task_description, due_date, priority)
+                self.send_json_response({
+                    "success": True,
+                    "task": result,
+                    "message": "Task created successfully"
+                })
+                
+            elif path.startswith("/api/v1/crm/contacts/") and path.endswith("/events"):
+                # Schedule calendar event for contact
+                contact_id = path.split("/")[-2]
+                event_title = data.get("event_title")
+                event_description = data.get("event_description", "")
+                event_date = data.get("event_date")  # YYYY-MM-DD HH:MM format
+                duration_minutes = data.get("duration_minutes", 60)
+                
+                if not event_title:
+                    self.send_json_response({"error": "event_title is required"}, status=400)
+                    return
+                
+                result = schedule_calendar_event(contact_id, event_title, event_description, event_date, duration_minutes)
+                self.send_json_response({
+                    "success": True,
+                    "event": result,
+                    "message": "Event scheduled successfully"
+                })
+                
+            elif path.startswith("/api/v1/crm/companies/") and path.endswith("/documents"):
+                # Attach document to company
+                company_id = path.split("/")[-2]
+                file_url = data.get("file_url")
+                file_name = data.get("file_name")
+                document_type = data.get("document_type", "Document")
+                
+                if not file_url or not file_name:
+                    self.send_json_response({"error": "file_url and file_name are required"}, status=400)
+                    return
+                
+                result = attach_document_to_company(company_id, file_url, file_name, document_type)
+                self.send_json_response({
+                    "success": True,
+                    "document": result,
+                    "message": "Document attached to company successfully"
                 })
                 
             else:
