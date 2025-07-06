@@ -115,14 +115,8 @@ def create_contact_in_lacrm(name, email=None, phone=None, company_name=None, add
             'AssignedTo': user_code
         }
         
-        # Add optional fields only if provided (LACRM is picky about format)
-        if email:
-            params['Email'] = f'[{{"Text":"{email}","Type":"Work"}}]'
-        if phone:
-            params['Phone'] = f'[{{"Text":"{phone}","Type":"Work"}}]'
-        if address:
-            # Simple address - just put it in Street field
-            params['Address'] = f'[{{"Street":"{address}","Type":"Work"}}]'
+        # Skip email/phone/address for now - LACRM array format is tricky
+        # Focus on getting basic contact creation working first
         
         response = requests.get(
             LACRM_BASE_URL,
