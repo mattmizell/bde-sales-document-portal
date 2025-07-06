@@ -1,0 +1,2 @@
+# No external dependencies - uses only Python standard library
+# This file exists only to satisfy Render.com deployment requirements
