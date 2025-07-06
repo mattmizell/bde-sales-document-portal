@@ -874,6 +874,88 @@ class CRMHandler(BaseHTTPRequestHandler):
                     "message": "Document attached to company successfully"
                 })
                 
+            elif path == "/api/docuseal/create-form":
+                # Create DocuSeal form with pre-filled data
+                template_id = data.get("template_id")
+                contact_id = data.get("contact_id")
+                prefilled_data = data.get("prefilled_data", {})
+                contact_email = data.get("contact_email")
+                contact_name = data.get("contact_name")
+                
+                if not template_id or not contact_email:
+                    self.send_json_response({"error": "template_id and contact_email are required"}, status=400)
+                    return
+                
+                # Map template names to actual DocuSeal template IDs
+                template_mapping = {
+                    "customer_setup": os.getenv("DOCUSEAL_CUSTOMER_SETUP_TEMPLATE_ID", "VmPsZnK4ARbXET"),
+                    "eft_auth": os.getenv("DOCUSEAL_EFT_TEMPLATE_ID", ""),
+                    "p66_loi": os.getenv("DOCUSEAL_P66_LOI_TEMPLATE_ID", ""),
+                    "vp_loi": os.getenv("DOCUSEAL_VP_LOI_TEMPLATE_ID", "")
+                }
+                
+                actual_template_id = template_mapping.get(template_id, template_id)
+                
+                # Call DocuSeal API
+                docuseal_api_url = os.getenv("DOCUSEAL_API_URL", "https://bde-docuseal-selfhosted.onrender.com/api")
+                docuseal_api_key = os.getenv("DOCUSEAL_API_KEY", "mHVsKRBH4EWVPEAxZ4nsVCa1WmAjZr4hhxj2MBWyCns")
+                
+                if not docuseal_api_key:
+                    self.send_json_response({"error": "DocuSeal API key not configured"}, status=500)
+                    return
+                
+                payload = {
+                    "template_id": actual_template_id,
+                    "send_email": False,  # Don't auto-send, return link instead
+                    "submitters": [{
+                        "role": "First Party",
+                        "email": contact_email,
+                        "name": contact_name or "Customer",
+                        "values": prefilled_data
+                    }]
+                }
+                
+                headers = {
+                    "X-Auth-Token": docuseal_api_key,
+                    "Content-Type": "application/json"
+                }
+                
+                try:
+                    response = requests.post(
+                        f"{docuseal_api_url}/submissions",
+                        headers=headers,
+                        json=payload,
+                        timeout=30
+                    )
+                    
+                    if response.status_code == 201:
+                        result = response.json()
+                        # Get the signing URL from the first submitter
+                        signing_url = None
+                        if result.get("submitters") and len(result["submitters"]) > 0:
+                            signing_url = result["submitters"][0].get("embed_src")
+                        
+                        # Log successful creation
+                        if contact_id:
+                            logger.info(f"✅ DocuSeal form created for contact {contact_id}: {signing_url}")
+                        
+                        self.send_json_response({
+                            "success": True,
+                            "signing_url": signing_url,
+                            "submission_id": result.get("id"),
+                            "template_id": actual_template_id,
+                            "message": "DocuSeal form created successfully"
+                        })
+                    else:
+                        error_msg = f"DocuSeal API error: {response.status_code} - {response.text}"
+                        logger.error(error_msg)
+                        self.send_json_response({"error": error_msg}, status=500)
+                        
+                except requests.exceptions.RequestException as e:
+                    error_msg = f"DocuSeal API request failed: {str(e)}"
+                    logger.error(error_msg)
+                    self.send_json_response({"error": error_msg}, status=500)
+                
             else:
                 self.send_json_response({"error": "Not found"}, status=404)
                 

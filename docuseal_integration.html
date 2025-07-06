@@ -485,38 +485,91 @@
             // Show status
             showStatus('Creating DocuSeal form...', true);
             
-            // In a real implementation, this would call the DocuSeal API
-            // For now, we'll show the data that would be sent
-            const docusealPayload = {
-                template_id: template,
-                submitters: [{
-                    role: "First Party",
-                    email: selectedContact.email || '',
-                    name: selectedContact.name || '',
-                    values: prefilledData
-                }]
-            };
-            
-            // Display the payload that would be sent to DocuSeal
-            const statusDiv = document.getElementById('statusMessage');
-            statusDiv.innerHTML += `
-                <div style="margin-top: 20px;">
-                    <h3>DocuSeal API Payload:</h3>
-                    <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto;">
+            try {
+                // Call your CRM bridge to create the DocuSeal form
+                const response = await fetch(`${CRM_API}/api/docuseal/create-form`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        template_id: template,
+                        contact_id: selectedContact.contact_id,
+                        prefilled_data: prefilledData,
+                        contact_email: selectedContact.email,
+                        contact_name: selectedContact.name
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.signing_url) {
+                    // Success! Open the form
+                    showStatus('Form created successfully! Opening DocuSeal form...', true);
+                    
+                    const statusDiv = document.getElementById('statusMessage');
+                    statusDiv.innerHTML += `
+                        <div style="margin-top: 20px; padding: 15px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px;">
+                            <h3>✅ DocuSeal Form Ready!</h3>
+                            <p><strong>Form URL:</strong> <a href="${result.signing_url}" target="_blank">${result.signing_url}</a></p>
+                            <button onclick="window.open('${result.signing_url}', '_blank')" style="background: #28a745; margin-right: 10px;">Open Form</button>
+                            <button onclick="copyUrl('${result.signing_url}')" class="copy-button">Copy URL</button>
+                            <p style="margin-top: 10px; font-size: 12pt;">
+                                <strong>What happens next:</strong><br>
+                                • Customer fills out and signs the pre-filled form<br>
+                                • Completed document is automatically saved to your CRM<br>
+                                • You get notified when it's completed
+                            </p>
+                        </div>
+                    `;
+                    
+                    // Auto-open the form in a new window
+                    setTimeout(() => {
+                        window.open(result.signing_url, '_blank');
+                    }, 1000);
+                    
+                } else {
+                    throw new Error('No signing URL returned from DocuSeal');
+                }
+                
+            } catch (error) {
+                console.error('DocuSeal creation error:', error);
+                showStatus('Error creating DocuSeal form: ' + error.message, false);
+                
+                // Fallback: show the payload for manual use
+                const docusealPayload = {
+                    template_id: template,
+                    submitters: [{
+                        role: "First Party",
+                        email: selectedContact.email || '',
+                        name: selectedContact.name || '',
+                        values: prefilledData
+                    }]
+                };
+                
+                const statusDiv = document.getElementById('statusMessage');
+                statusDiv.innerHTML += `
+                    <div style="margin-top: 20px;">
+                        <h3>Fallback: Manual DocuSeal API Payload:</h3>
+                        <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 11pt;">
 ${JSON.stringify(docusealPayload, null, 2)}
-                    </pre>
-                    <button class="copy-button" onclick="copyPayload()">Copy JSON</button>
-                    <p style="margin-top: 10px;">
-                        <strong>Next Steps:</strong><br>
-                        1. Use this payload with DocuSeal's API to create a submission<br>
-                        2. The API will return a signing link for the customer<br>
-                        3. Send the link to the customer or embed it in your application
-                    </p>
-                </div>
-            `;
-            
-            // Store payload for copying
-            window.docusealPayload = docusealPayload;
+                        </pre>
+                        <button class="copy-button" onclick="copyPayload()">Copy JSON</button>
+                    </div>
+                `;
+                
+                window.docusealPayload = docusealPayload;
+            }
+        }
+        
+        function copyUrl(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                alert('URL copied to clipboard!');
+            });
         }
         
         function copyPayload() {
