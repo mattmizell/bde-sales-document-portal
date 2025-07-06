@@ -111,8 +111,8 @@ def create_contact_in_lacrm(name, email=None, phone=None, company_name=None, add
             'Function': 'CreateContact',
             'FirstName': first_name,
             'LastName': last_name,
-            'CompanyName': company_name or "",
-            'IsCompany': True if company_name else False,
+            'CompanyName': company_name or "Gas O Matt",  # Default company name
+            'IsCompany': True,  # Always true since we're creating business contacts
             'AssignedTo': user_code
         }
         
