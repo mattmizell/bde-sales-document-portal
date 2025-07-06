@@ -96,6 +96,7 @@ def create_contact_in_lacrm(name, email=None, phone=None, company_name=None, add
         payload = {
             "Function": "CreateContact",
             "Parameters": {
+                "ApiToken": LACRM_API_KEY,
                 "Name": name,
                 "Email": email or "",
                 "Phone": phone or "", 
@@ -106,7 +107,7 @@ def create_contact_in_lacrm(name, email=None, phone=None, company_name=None, add
         
         response = requests.post(
             LACRM_BASE_URL,
-            headers={"Authorization": f"Bearer {LACRM_API_KEY}"},
+            headers={"Content-Type": "application/json"},
             json=payload,
             timeout=30
         )
@@ -159,12 +160,15 @@ def update_contact_in_lacrm(contact_id, name=None, email=None, phone=None, compa
         
         payload = {
             "Function": "EditContact",
-            "Parameters": params
+            "Parameters": {
+                "ApiToken": LACRM_API_KEY,
+                **params
+            }
         }
         
         response = requests.post(
             LACRM_BASE_URL,
-            headers={"Authorization": f"Bearer {LACRM_API_KEY}"},
+            headers={"Content-Type": "application/json"},
             json=payload,
             timeout=30
         )
@@ -199,6 +203,7 @@ def add_note_to_contact(contact_id, note_text, note_type="General"):
         payload = {
             "Function": "CreateNote",
             "Parameters": {
+                "ApiToken": LACRM_API_KEY,
                 "ContactId": contact_id,
                 "Note": note_text,
                 "Type": note_type
@@ -207,7 +212,7 @@ def add_note_to_contact(contact_id, note_text, note_type="General"):
         
         response = requests.post(
             LACRM_BASE_URL,
-            headers={"Authorization": f"Bearer {LACRM_API_KEY}"},
+            headers={"Content-Type": "application/json"},
             json=payload,
             timeout=30
         )
@@ -242,13 +247,14 @@ def get_contact_notes(contact_id):
         payload = {
             "Function": "GetNotes",
             "Parameters": {
+                "ApiToken": LACRM_API_KEY,
                 "ContactId": contact_id
             }
         }
         
         response = requests.post(
             LACRM_BASE_URL,
-            headers={"Authorization": f"Bearer {LACRM_API_KEY}"},
+            headers={"Content-Type": "application/json"},
             json=payload,
             timeout=30
         )
@@ -344,6 +350,7 @@ def attach_document_to_contact(contact_id, file_url, file_name, document_type="D
         payload = {
             "Function": "UploadFile",
             "Parameters": {
+                "ApiToken": LACRM_API_KEY,
                 "ContactId": contact_id,
                 "FileUrl": file_url,
                 "FileName": file_name,
@@ -353,7 +360,7 @@ def attach_document_to_contact(contact_id, file_url, file_name, document_type="D
         
         response = requests.post(
             LACRM_BASE_URL,
-            headers={"Authorization": f"Bearer {LACRM_API_KEY}"},
+            headers={"Content-Type": "application/json"},
             json=payload,
             timeout=30
         )
@@ -390,6 +397,7 @@ def attach_document_to_company(company_id, file_url, file_name, document_type="D
         payload = {
             "Function": "UploadFile",
             "Parameters": {
+                "ApiToken": LACRM_API_KEY,
                 "CompanyId": company_id,
                 "FileUrl": file_url,
                 "FileName": file_name,
@@ -399,7 +407,7 @@ def attach_document_to_company(company_id, file_url, file_name, document_type="D
         
         response = requests.post(
             LACRM_BASE_URL,
-            headers={"Authorization": f"Bearer {LACRM_API_KEY}"},
+            headers={"Content-Type": "application/json"},
             json=payload,
             timeout=30
         )
@@ -441,6 +449,7 @@ def create_task_for_contact(contact_id, task_title, task_description="", due_dat
         payload = {
             "Function": "CreateTask",
             "Parameters": {
+                "ApiToken": LACRM_API_KEY,
                 "ContactId": contact_id,
                 "Title": task_title,
                 "Description": task_description,
@@ -451,7 +460,7 @@ def create_task_for_contact(contact_id, task_title, task_description="", due_dat
         
         response = requests.post(
             LACRM_BASE_URL,
-            headers={"Authorization": f"Bearer {LACRM_API_KEY}"},
+            headers={"Content-Type": "application/json"},
             json=payload,
             timeout=30
         )
@@ -495,6 +504,7 @@ def schedule_calendar_event(contact_id, event_title, event_description="", event
         payload = {
             "Function": "CreateEvent",
             "Parameters": {
+                "ApiToken": LACRM_API_KEY,
                 "ContactId": contact_id,
                 "Title": event_title,
                 "Description": event_description,
@@ -505,7 +515,7 @@ def schedule_calendar_event(contact_id, event_title, event_description="", event
         
         response = requests.post(
             LACRM_BASE_URL,
-            headers={"Authorization": f"Bearer {LACRM_API_KEY}"},
+            headers={"Content-Type": "application/json"},
             json=payload,
             timeout=30
         )
@@ -543,13 +553,14 @@ def get_contact_documents(contact_id):
         payload = {
             "Function": "GetFiles",
             "Parameters": {
+                "ApiToken": LACRM_API_KEY,
                 "ContactId": contact_id
             }
         }
         
         response = requests.post(
             LACRM_BASE_URL,
-            headers={"Authorization": f"Bearer {LACRM_API_KEY}"},
+            headers={"Content-Type": "application/json"},
             json=payload,
             timeout=30
         )
@@ -581,13 +592,14 @@ def get_contact_tasks(contact_id):
         payload = {
             "Function": "GetTasks",
             "Parameters": {
+                "ApiToken": LACRM_API_KEY,
                 "ContactId": contact_id
             }
         }
         
         response = requests.post(
             LACRM_BASE_URL,
-            headers={"Authorization": f"Bearer {LACRM_API_KEY}"},
+            headers={"Content-Type": "application/json"},
             json=payload,
             timeout=30
         )
