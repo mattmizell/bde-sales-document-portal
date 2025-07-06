@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BDE DocuSeal CRM Integration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #0066cc;
+            margin-bottom: 30px;
+        }
+        
+        .search-section, .form-section, .results-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14pt;
+        }
+        
+        button {
+            background: #0066cc;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14pt;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #0052a3;
+        }
+        
+        .contact-result {
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .contact-result:hover {
+            background: #e6f3ff;
+        }
+        
+        .contact-result.selected {
+            border-color: #0066cc;
+            background: #e6f3ff;
+        }
+        
+        .form-preview {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .field-mapping {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 10px 0;
+            font-size: 12pt;
+        }
+        
+        .field-label {
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .field-value {
+            color: #333;
+        }
+        
+        .status-message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .copy-button {
+            background: #28a745;
+            font-size: 12pt;
+            padding: 5px 10px;
+        }
+        
+        .copy-button:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BDE DocuSeal CRM Integration</h1>
+        
+        <!-- Search Section -->
+        <div class="search-section">
+            <h2>Step 1: Search CRM Contact</h2>
+            <input type="text" id="searchInput" placeholder="Enter company name, contact name, or email">
+            <button onclick="searchContacts()">Search CRM</button>
+            
+            <div id="searchResults" style="margin-top: 20px;"></div>
+        </div>
+        
+        <!-- Form Selection Section -->
+        <div class="form-section">
+            <h2>Step 2: Select DocuSeal Template</h2>
+            <select id="templateSelect">
+                <option value="">Select a form template...</option>
+                <option value="customer_setup">Customer Setup Form</option>
+                <option value="eft_auth">EFT Authorization Form</option>
+                <option value="p66_loi">Phillips 66 Letter of Intent</option>
+                <option value="vp_loi">VP Racing Fuels Letter of Intent</option>
+            </select>
+            
+            <div id="selectedContact" style="margin-top: 20px; display: none;">
+                <h3>Selected Contact:</h3>
+                <div id="contactDetails"></div>
+            </div>
+            
+            <button onclick="previewForm()" style="margin-top: 10px;">Preview Pre-filled Form</button>
+            <button onclick="createDocuSealForm()" style="margin-top: 10px; background: #28a745;">Create DocuSeal Form</button>
+        </div>
+        
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <h2>Pre-filled Form Data</h2>
+            <div id="formPreview"></div>
+            <div id="statusMessage"></div>
+        </div>
+    </div>
+    
+    <script>
+        let selectedContact = null;
+        let prefilledData = null;
+        
+        // CRM Bridge API URL
+        const CRM_API = 'https://bde-sales-portal.onrender.com';
+        
+        async function searchContacts() {
+            const searchTerm = document.getElementById('searchInput').value;
+            if (!searchTerm) {
+                alert('Please enter a search term');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${CRM_API}/api/contacts/search?q=${encodeURIComponent(searchTerm)}`);
+                const contacts = await response.json();
+                
+                displaySearchResults(contacts);
+            } catch (error) {
+                console.error('Search error:', error);
+                showStatus('Error searching contacts: ' + error.message, false);
+            }
+        }
+        
+        function displaySearchResults(contacts) {
+            const resultsDiv = document.getElementById('searchResults');
+            
+            if (!contacts || contacts.length === 0) {
+                resultsDiv.innerHTML = '<p>No contacts found</p>';
+                return;
+            }
+            
+            let html = '<h3>Search Results:</h3>';
+            contacts.forEach(contact => {
+                html += `
+                    <div class="contact-result" onclick="selectContact(${JSON.stringify(contact).replace(/"/g, '&quot;')})">
+                        <strong>${contact.companyName || contact.name}</strong><br>
+                        ${contact.name ? 'Contact: ' + contact.name + '<br>' : ''}
+                        ${contact.email ? 'Email: ' + contact.email + '<br>' : ''}
+                        ${contact.phone ? 'Phone: ' + contact.phone : ''}
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function selectContact(contact) {
+            selectedContact = contact;
+            
+            // Update UI
+            document.querySelectorAll('.contact-result').forEach(el => el.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            
+            // Show selected contact details
+            const detailsDiv = document.getElementById('selectedContact');
+            detailsDiv.style.display = 'block';
+            
+            document.getElementById('contactDetails').innerHTML = `
+                <div class="field-mapping">
+                    <div class="field-label">Company:</div>
+                    <div class="field-value">${contact.companyName || 'N/A'}</div>
+                    <div class="field-label">Contact:</div>
+                    <div class="field-value">${contact.name || 'N/A'}</div>
+                    <div class="field-label">Email:</div>
+                    <div class="field-value">${contact.email || 'N/A'}</div>
+                    <div class="field-label">Phone:</div>
+                    <div class="field-value">${contact.phone || 'N/A'}</div>
+                </div>
+            `;
+        }
+        
+        function previewForm() {
+            if (!selectedContact) {
+                alert('Please select a contact first');
+                return;
+            }
+            
+            const template = document.getElementById('templateSelect').value;
+            if (!template) {
+                alert('Please select a form template');
+                return;
+            }
+            
+            // Map CRM data to DocuSeal fields
+            const customFields = selectedContact.customFields || {};
+            
+            prefilledData = {
+                // Business Information
+                business_name: selectedContact.companyName || '',
+                dba: customFields.DBA || '',
+                fein: customFields.FederalTaxID || '',
+                state_id: customFields.StateTaxID || '',
+                
+                // Address Information
+                billing_address: selectedContact.address?.street || '',
+                billing_city: selectedContact.address?.city || '',
+                billing_state: selectedContact.address?.state || '',
+                billing_zip: selectedContact.address?.zip || '',
+                
+                // Contact Information
+                billing_phone: selectedContact.phone || '',
+                billing_fax: customFields.FaxNumber || '',
+                
+                // Business Details
+                years_in_biz: customFields.YearsInBusiness || '',
+                number_employees: customFields.NumberOfEmployees || '',
+                estimated_ann_diesel: customFields.AnnualDieselVolume || '',
+                estimated_ann_unl: customFields.AnnualGasolineVolume || '',
+                credit_request: customFields.CreditAmountRequested || '',
+                
+                // Key Contacts
+                purchase_mgr_name: customFields.PurchasingManagerName || '',
+                acct_payable_name: customFields.AccountsPayableName || '',
+                purchasing_email: customFields.PurchasingEmail || '',
+                purchasing_phone: customFields.PurchasingPhone || '',
+                accounts_payable_email: customFields.AccountsPayableEmail || '',
+                accounts_payable_phone: customFields.AccountsPayablePhone || '',
+                
+                // Signer Information
+                signer_name: selectedContact.name || '',
+                signer_title: selectedContact.title || '',
+                signature_date: new Date().toLocaleDateString()
+            };
+            
+            // Display preview
+            displayFormPreview(prefilledData);
+        }
+        
+        function displayFormPreview(data) {
+            const resultsSection = document.getElementById('resultsSection');
+            resultsSection.style.display = 'block';
+            
+            const previewDiv = document.getElementById('formPreview');
+            let html = '<div class="form-preview"><h3>Pre-filled Field Values:</h3>';
+            
+            // Group fields by category
+            const categories = {
+                'Business Information': ['business_name', 'dba', 'fein', 'state_id'],
+                'Address': ['billing_address', 'billing_city', 'billing_state', 'billing_zip'],
+                'Contact': ['billing_phone', 'billing_fax'],
+                'Business Details': ['years_in_biz', 'number_employees', 'estimated_ann_diesel', 'estimated_ann_unl', 'credit_request'],
+                'Key Contacts': ['purchase_mgr_name', 'acct_payable_name', 'purchasing_email', 'purchasing_phone', 'accounts_payable_email', 'accounts_payable_phone'],
+                'Signer': ['signer_name', 'signer_title', 'signature_date']
+            };
+            
+            for (const [category, fields] of Object.entries(categories)) {
+                html += `<h4>${category}</h4><div class="field-mapping">`;
+                
+                fields.forEach(field => {
+                    if (data[field]) {
+                        const label = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        html += `
+                            <div class="field-label">${label}:</div>
+                            <div class="field-value">${data[field]}</div>
+                        `;
+                    }
+                });
+                
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            previewDiv.innerHTML = html;
+        }
+        
+        async function createDocuSealForm() {
+            if (!selectedContact || !prefilledData) {
+                alert('Please preview the form first');
+                return;
+            }
+            
+            const template = document.getElementById('templateSelect').value;
+            if (!template) {
+                alert('Please select a form template');
+                return;
+            }
+            
+            // Show status
+            showStatus('Creating DocuSeal form...', true);
+            
+            // In a real implementation, this would call the DocuSeal API
+            // For now, we'll show the data that would be sent
+            const docusealPayload = {
+                template_id: template,
+                submitters: [{
+                    role: "First Party",
+                    email: selectedContact.email || '',
+                    name: selectedContact.name || '',
+                    values: prefilledData
+                }]
+            };
+            
+            // Display the payload that would be sent to DocuSeal
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.innerHTML += `
+                <div style="margin-top: 20px;">
+                    <h3>DocuSeal API Payload:</h3>
+                    <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto;">
+${JSON.stringify(docusealPayload, null, 2)}
+                    </pre>
+                    <button class="copy-button" onclick="copyPayload()">Copy JSON</button>
+                    <p style="margin-top: 10px;">
+                        <strong>Next Steps:</strong><br>
+                        1. Use this payload with DocuSeal's API to create a submission<br>
+                        2. The API will return a signing link for the customer<br>
+                        3. Send the link to the customer or embed it in your application
+                    </p>
+                </div>
+            `;
+            
+            // Store payload for copying
+            window.docusealPayload = docusealPayload;
+        }
+        
+        function copyPayload() {
+            const json = JSON.stringify(window.docusealPayload, null, 2);
+            navigator.clipboard.writeText(json).then(() => {
+                alert('Payload copied to clipboard!');
+            });
+        }
+        
+        function showStatus(message, isSuccess) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.className = `status-message ${isSuccess ? 'status-success' : 'status-error'}`;
+            statusDiv.textContent = message;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Better Day Energy - Electronic Funds Transfer Authorization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            margin: 0.75in;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 20px;
+        }
+        
+        .company-logo {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+        
+        .form-title {
+            font-size: 16pt;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            font-size: 12pt;
+            color: #666;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .section-title {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #0066cc;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #0066cc;
+            padding-bottom: 5px;
+        }
+        
+        .field-row {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        
+        .field-group {
+            flex: 1;
+            margin-right: 20px;
+        }
+        
+        .field-group:last-child {
+            margin-right: 0;
+        }
+        
+        .field-label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 10pt;
+        }
+        
+        .field-input {
+            width: 100%;
+            height: 25px;
+            border: 1px solid #999;
+            border-radius: 3px;
+            padding: 5px;
+            font-size: 11pt;
+            background-color: #f9f9f9;
+        }
+        
+        .field-input-large {
+            width: 100%;
+            height: 35px;
+            border: 1px solid #999;
+            border-radius: 3px;
+            padding: 5px;
+            font-size: 11pt;
+            background-color: #f9f9f9;
+        }
+        
+        .field-input-small {
+            width: 80px;
+            height: 25px;
+            border: 1px solid #999;
+            border-radius: 3px;
+            padding: 5px;
+            font-size: 11pt;
+            background-color: #f9f9f9;
+        }
+        
+        .terms-section {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 10pt;
+            line-height: 1.3;
+            margin: 20px 0;
+        }
+        
+        .authorization-section {
+            background-color: #fff8dc;
+            border: 2px solid #ffa500;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .signature-section {
+            margin-top: 30px;
+            border: 2px solid #0066cc;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        
+        .signature-row {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .signature-field {
+            flex: 1;
+            margin-right: 30px;
+        }
+        
+        .signature-field:last-child {
+            margin-right: 0;
+        }
+        
+        .signature-line {
+            width: 100%;
+            height: 40px;
+            border: 2px solid #0066cc;
+            border-radius: 3px;
+            background-color: #fff;
+        }
+        
+        .highlight-box {
+            background-color: #e6f3ff;
+            border-left: 4px solid #0066cc;
+            padding: 10px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="company-logo">BETTER DAY ENERGY</div>
+        <div class="form-title">Electronic Funds Transfer Authorization Agreement</div>
+        <div class="subtitle">ACH Payment Authorization Form</div>
+    </div>
+
+    <!-- Customer Information Section -->
+    <div class="section">
+        <div class="section-title">Customer Information</div>
+        
+        <div class="field-row">
+            <div class="field-group">
+                <label class="field-label">Customer Name (Legal Business Name)</label>
+                <div class="field-input-large"></div>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Federal Tax ID Number</label>
+                <div class="field-input"></div>
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field-group">
+                <label class="field-label">Business Address</label>
+                <div class="field-input-large"></div>
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field-group">
+                <label class="field-label">City</label>
+                <div class="field-input"></div>
+            </div>
+            <div class="field-group">
+                <label class="field-label">State</label>
+                <div class="field-input-small"></div>
+            </div>
+            <div class="field-group">
+                <label class="field-label">ZIP Code</label>
+                <div class="field-input"></div>
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field-group">
+                <label class="field-label">Accounting / EFT Contact Name</label>
+                <div class="field-input-large"></div>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Contact Telephone</label>
+                <div class="field-input"></div>
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field-group">
+                <label class="field-label">Email Address</label>
+                <div class="field-input-large"></div>
+            </div>
+            <div class="field-group">
+                <label class="field-label">EFT Fax Number</label>
+                <div class="field-input"></div>
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field-group">
+                <label class="field-label">Effective Date</label>
+                <div class="field-input"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authorization Statement -->
+    <div class="authorization-section">
+        <p><strong>AUTHORIZATION:</strong> The above named "Customer" hereby authorizes Better Day Energy Company to originate Automated Clearing House electronic funds transfer credit/debit entries to "Customer's" account, indicated below, and hereby authorize the Depository institution, named below, hereinafter called "Financial Institution" to accept and credit or debit the amount of such entries to the "Customer's" account.</p>
+    </div>
+
+    <!-- Banking Information Section -->
+    <div class="section">
+        <div class="section-title">Banking Information</div>
+        
+        <div class="field-row">
+            <div class="field-group">
+                <label class="field-label">Bank Name</label>
+                <div class="field-input-large"></div>
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field-group">
+                <label class="field-label">Bank Address</label>
+                <div class="field-input-large"></div>
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field-group">
+                <label class="field-label">City</label>
+                <div class="field-input"></div>
+            </div>
+            <div class="field-group">
+                <label class="field-label">State</label>
+                <div class="field-input-small"></div>
+            </div>
+            <div class="field-group">
+                <label class="field-label">ZIP Code</label>
+                <div class="field-input"></div>
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field-group">
+                <label class="field-label">Bank Phone Number</label>
+                <div class="field-input"></div>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Bank Fax Number</label>
+                <div class="field-input"></div>
+            </div>
+        </div>
+        
+        <div class="highlight-box">
+            <p><strong>Important:</strong> Please attach a voided check or provide bank letter with routing and account information.</p>
+        </div>
+        
+        <div class="field-row">
+            <div class="field-group">
+                <label class="field-label">Bank Routing Number (9 digits)</label>
+                <div class="field-input"></div>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Customer Account Number</label>
+                <div class="field-input-large"></div>
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field-group">
+                <label class="field-label">Name as Listed on Bank Account (if different than above)</label>
+                <div class="field-input-large"></div>
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field-group">
+                <label class="field-label">Bank Contact Name</label>
+                <div class="field-input-large"></div>
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field-group">
+                <label class="field-label">Bank Authorized Signature (if required by bank)</label>
+                <div class="signature-line"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms and Conditions -->
+    <div class="section">
+        <div class="section-title">Terms and Conditions</div>
+        <div class="terms-section">
+            <p><strong>Customer Responsibility:</strong> "Customer" shall be responsible for any loss which may arise by reason of any error, mistake or fraud regarding the information provided in this agreement, except losses incurred as a result of any error, mistake or fraud of Better Day Energy, its officers, directors, employees or agents.</p>
+            
+            <p><strong>Changes to Bank Information:</strong> "Customer" may change any portion of the information provided under Bank Information by giving at least fifteen (15) days written notice to Better Day Energy at the address shown below.</p>
+            
+            <p><strong>Cancellation:</strong> This authority shall remain in effect until fifteen (15) days after Financial Institution, at address shown above, and Better Day Energy, at address shown below, have received written cancellation from "Customer". Notice of cancellation shall in no way affect credit or debit entries initiated prior to actual receipt and processing of notice. "Customer" understands that Better Day Energy may suspend this Agreement at any time.</p>
+            
+            <p><strong>Sufficient Funds:</strong> "Customer" understands that the Automated Clearing House electronic funds transfer debit entry will only be accepted by Financial Institution if sufficient funds are available in "Customer's" account listed above and "Customer" agrees separately with Better Day Energy to maintain sufficient funds at all times in this account.</p>
+            
+            <p><strong>Dispute Rights:</strong> By signing this Authorization, "Customer" in no way relinquishes any legal right to dispute any item.</p>
+        </div>
+    </div>
+
+    <!-- Customer Authorization Section -->
+    <div class="signature-section">
+        <div class="section-title">Customer Authorization</div>
+        <p style="margin-bottom: 20px;"><strong>By signing below, Customer authorizes Better Day Energy to process electronic fund transfers as described in this agreement.</strong></p>
+        
+        <div class="signature-row">
+            <div class="signature-field">
+                <label class="field-label">Authorized Name (Print)</label>
+                <div class="field-input-large"></div>
+            </div>
+            <div class="signature-field">
+                <label class="field-label">Title</label>
+                <div class="field-input-large"></div>
+            </div>
+        </div>
+        
+        <div class="signature-row">
+            <div class="signature-field">
+                <label class="field-label">Authorized Signature</label>
+                <div class="signature-line"></div>
+            </div>
+            <div class="signature-field">
+                <label class="field-label">Date</label>
+                <div class="field-input"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; margin-top: 30px; font-size: 10pt; color: #666;">
+        <p>Better Day Energy Company | Electronic Funds Transfer Authorization</p>
+        <p>For questions, contact us at accounting@betterdayenergy.com</p>
+        <p style="margin-top: 10px; font-style: italic;">Please return completed form with voided check or bank letter</p>
+    </div>
+</body>
+</html>

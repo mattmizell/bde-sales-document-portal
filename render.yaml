@@ -10,6 +10,10 @@ services:
     startCommand: python main.py
     
     envVars:
+      # Force Python version
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      
       # Application
       - key: ENVIRONMENT
         value: production

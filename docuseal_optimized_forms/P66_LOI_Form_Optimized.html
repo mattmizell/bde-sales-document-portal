@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Better Day Energy - Phillips 66 Letter of Intent</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            margin: 0.75in;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 20px;
+        }
+        
+        .company-logo {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+        
+        .form-title {
+            font-size: 18pt;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 14pt;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .brand-section {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .brand-logo {
+            font-size: 16pt;
+            font-weight: bold;
+            color: #d32f2f;
+            margin-bottom: 10px;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .section-title {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #0066cc;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #0066cc;
+            padding-bottom: 5px;
+        }
+        
+        .field-row {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        
+        .field-group {
+            flex: 1;
+            margin-right: 20px;
+        }
+        
+        .field-group:last-child {
+            margin-right: 0;
+        }
+        
+        .field-label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 10pt;
+        }
+        
+        .field-input {
+            width: 100%;
+            height: 25px;
+            border: 1px solid #999;
+            border-radius: 3px;
+            padding: 5px;
+            font-size: 11pt;
+            background-color: #f9f9f9;
+        }
+        
+        .field-input-large {
+            width: 100%;
+            height: 35px;
+            border: 1px solid #999;
+            border-radius: 3px;
+            padding: 5px;
+            font-size: 11pt;
+            background-color: #f9f9f9;
+        }
+        
+        .field-input-small {
+            width: 120px;
+            height: 25px;
+            border: 1px solid #999;
+            border-radius: 3px;
+            padding: 5px;
+            font-size: 11pt;
+            background-color: #f9f9f9;
+        }
+        
+        .proposal-section {
+            background-color: #e6f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .value-highlight {
+            background-color: #fff8dc;
+            border-left: 4px solid #ffa500;
+            padding: 10px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .incentive-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-left: 3px solid #0066cc;
+            background-color: #f5f5f5;
+        }
+        
+        .timeline-section {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .timeline-item {
+            margin-bottom: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .signature-section {
+            margin-top: 30px;
+            border: 2px solid #0066cc;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        
+        .signature-row {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .signature-field {
+            flex: 1;
+            margin-right: 30px;
+        }
+        
+        .signature-field:last-child {
+            margin-right: 0;
+        }
+        
+        .signature-line {
+            width: 100%;
+            height: 40px;
+            border: 2px solid #0066cc;
+            border-radius: 3px;
+            background-color: #fff;
+        }
+        
+        .dates-section {
+            text-align: center;
+            background-color: #fffacd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+        }
+        
+        .page-break {
+            page-break-before: always;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="company-logo">BETTER DAY ENERGY</div>
+        <div class="form-title">Letter of Intent</div>
+        <div class="subtitle">Phillips 66 Branded Supply Agreement</div>
+    </div>
+
+    <!-- Brand Section -->
+    <div class="brand-section">
+        <div class="brand-logo">PHILLIPS 66</div>
+        <div style="font-size: 12pt; margin-top: 10px;">between</div>
+        <div style="font-size: 16pt; font-weight: bold; margin: 10px 0;">Customer Site, the Dealer</div>
+        <div style="font-size: 12pt;">and</div>
+        <div style="font-size: 16pt; font-weight: bold; margin: 10px 0;">Better Day Energy, the Jobber</div>
+    </div>
+
+    <!-- Proposal Dates -->
+    <div class="dates-section">
+        <div class="field-row">
+            <div class="field-group">
+                <label class="field-label">Proposed Date</label>
+                <div class="field-input"></div>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Valid Date</label>
+                <div class="field-input"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dealer Information Section -->
+    <div class="section">
+        <div class="section-title">Dealer Information</div>
+        
+        <div class="field-row">
+            <div class="field-group">
+                <label class="field-label">Dealer Business Name</label>
+                <div class="field-input-large"></div>
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field-group">
+                <label class="field-label">Retail Store Location Address</label>
+                <div class="field-input-large"></div>
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field-group">
+                <label class="field-label">City</label>
+                <div class="field-input"></div>
+            </div>
+            <div class="field-group">
+                <label class="field-label">State</label>
+                <div class="field-input-small"></div>
+            </div>
+            <div class="field-group">
+                <label class="field-label">ZIP Code</label>
+                <div class="field-input"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Proposal Section -->
+    <div class="section">
+        <div class="section-title">Proposal</div>
+        <div class="proposal-section">
+            <p><strong>Better Day Energy proposes to provide:</strong></p>
+            <ul>
+                <li><strong>Brand imaging funds</strong></li>
+                <li><strong>Consulting services</strong></li>
+                <li><strong>Fuel supply and delivery services</strong></li>
+            </ul>
+            <p><strong>In exchange for an exclusive 10-year fuel supply agreement with the Dealer to purchase:</strong></p>
+            
+            <div class="field-row">
+                <div class="field-group">
+                    <label class="field-label">Gasoline (Gallons per Month)</label>
+                    <div class="field-input-large"></div>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Diesel (Gallons per Month)</label>
+                    <div class="field-input-large"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Value Proposition Section -->
+    <div class="section">
+        <div class="section-title">Value Proposition</div>
+        <p>Better Day Energy offers a number of programs which create value for our customers including:</p>
+        <ul>
+            <li><strong>Competitive fuel pricing</strong></li>
+            <li><strong>Low credit card transaction fees</strong></li>
+            <li><strong>World-recognized Phillips 66 Brand image</strong></li>
+            <li><strong>Fuel industry expertise</strong> providing on-going support to your station's operations</li>
+            <li><strong>Regulatory compliance support</strong> as increasing Federal, State, and Local regulations impact your business</li>
+        </ul>
+    </div>
+
+    <!-- Incentives Section -->
+    <div class="section">
+        <div class="section-title">Incentives Package</div>
+        
+        <div class="incentive-item">
+            <strong>Image Funding</strong> for Phillips 66 Branded fascia, signs, LED halo lighting, main ID sign faces, and digital product pricing board for fuel pricing.
+            <div class="value-highlight">Valued $85,000 per site</div>
+        </div>
+        
+        <div class="incentive-item">
+            <strong>Incentive Funding</strong> based on contract performance.
+            <div class="field-row">
+                <div class="field-group">
+                    <label class="field-label">Site-Specific Incentive Value</label>
+                    <div class="field-input-large"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="incentive-item">
+            <strong>Rebate compliant fuel supply</strong> and monthly reporting to state and federal fuel programs.
+            <div class="value-highlight">Valued $216,000</div>
+        </div>
+    </div>
+
+    <!-- Page Break -->
+    <div class="page-break"></div>
+
+    <!-- Project Timeline Section -->
+    <div class="section">
+        <div class="section-title">Project Details and Timeline</div>
+        <div class="timeline-section">
+            <p><strong>Critical to the success of this project and securing the available incentive money is adherence to the project timeline and required qualifying activities:</strong></p>
+            
+            <div class="timeline-item">
+                <strong>1.</strong> Execute Fuel Supply Agreement
+            </div>
+            <div class="timeline-item">
+                <strong>2.</strong> Convert Credit Cards and begin B11/E10 fuel supply
+            </div>
+            <div class="timeline-item">
+                <strong>3.</strong> Solicit existing supplier for transfer
+            </div>
+            <div class="timeline-item">
+                <strong>4.</strong> Secure site transfer and/or debrand
+            </div>
+            <div class="timeline-item">
+                <strong>5.</strong> Execute project and imaging contract documents with vendors
+            </div>
+            <div class="timeline-item">
+                <strong>6.</strong> Install Canopy if required
+            </div>
+            <div class="timeline-item">
+                <strong>7.</strong> Conoco Phillips Imaging Project:
+                <ul style="margin-left: 20px; margin-top: 5px;">
+                    <li>Image canopy with fascia, signs, and LED halo lighting</li>
+                    <li>Replace main ID sign faces with brand signs</li>
+                    <li>Install new digital product pricing board for gasoline</li>
+                </ul>
+            </div>
+            <div class="timeline-item">
+                <strong>8.</strong> Submit final invoices, proof of payment, and evidence of project completion to brand for project reimbursements
+            </div>
+        </div>
+    </div>
+
+    <!-- Signature Section -->
+    <div class="signature-section">
+        <div class="section-title">Acceptance of Letter of Intent</div>
+        <p style="margin-bottom: 20px;"><strong>Acceptance of Letter of Intent as proposed:</strong></p>
+        
+        <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+            <div style="flex: 1; margin-right: 30px;">
+                <div style="text-align: center; font-weight: bold; margin-bottom: 20px;">DEALER</div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label class="field-label">Authorized Signatory Name (Print)</label>
+                    <div class="field-input-large"></div>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label class="field-label">Title</label>
+                    <div class="field-input-large"></div>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label class="field-label">Signature</label>
+                    <div class="signature-line"></div>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label class="field-label">Date</label>
+                    <div class="field-input"></div>
+                </div>
+            </div>
+            
+            <div style="flex: 1;">
+                <div style="text-align: center; font-weight: bold; margin-bottom: 20px;">BETTER DAY ENERGY LLC</div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label class="field-label">Authorized Signatory Name (Print)</label>
+                    <div class="field-input-large"></div>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label class="field-label">Title</label>
+                    <div class="field-input-large"></div>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label class="field-label">Signature</label>
+                    <div class="signature-line"></div>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label class="field-label">Date</label>
+                    <div class="field-input"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; margin-top: 30px; font-size: 10pt; color: #666;">
+        <p>Better Day Energy Company | Phillips 66 Letter of Intent</p>
+        <p>For questions, contact us at info@betterdayenergy.com</p>
+        <p style="margin-top: 10px; font-style: italic;">This Letter of Intent is subject to execution of definitive agreements</p>
+    </div>
+</body>
+</html>

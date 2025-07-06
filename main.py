@@ -640,6 +640,7 @@ class CRMHandler(BaseHTTPRequestHandler):
                         "customer_onboarding": "Setup complete → All docs attached → Schedule onboarding call"
                     },
                     "endpoints": {
+                        "docuseal_prefill": "GET /docuseal - DocuSeal form pre-fill interface",
                         "health": "GET /health",
                         "crm_health": "GET /api/v1/crm/health",
                         "contacts": {
@@ -665,6 +666,18 @@ class CRMHandler(BaseHTTPRequestHandler):
                         "stats": "GET /api/v1/crm/stats"
                     }
                 })
+                
+            elif path == "/docuseal" or path == "/docuseal-prefill":
+                # Serve the DocuSeal integration page
+                try:
+                    with open('docuseal_integration.html', 'r') as f:
+                        html_content = f.read()
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'text/html')
+                    self.end_headers()
+                    self.wfile.write(html_content.encode())
+                except FileNotFoundError:
+                    self.send_error(404, "DocuSeal integration page not found")
                 
             elif path == "/health":
                 stats = get_cache_stats()
