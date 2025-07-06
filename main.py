@@ -12,8 +12,8 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import parse_qs, urlparse
 
 import requests
-import pg8000
-from urllib.parse import urlparse as parse_url
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -28,25 +28,9 @@ DATABASE_URL = os.getenv(
 )
 
 def get_db_connection():
-    """Get PostgreSQL connection using pg8000"""
+    """Get PostgreSQL connection"""
     try:
-        # Parse DATABASE_URL for pg8000
-        parsed = parse_url(DATABASE_URL)
-        
-        # pg8000 SSL configuration for Render
-        import ssl
-        ssl_context = ssl.create_default_context()
-        ssl_context.check_hostname = False
-        ssl_context.verify_mode = ssl.CERT_NONE
-        
-        return pg8000.connect(
-            host=parsed.hostname,
-            port=parsed.port or 5432,
-            user=parsed.username,
-            password=parsed.password,
-            database=parsed.path[1:],  # Remove leading slash
-            ssl_context=ssl_context  # Proper SSL context for Render
-        )
+        return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     except Exception as e:
         logger.error(f"Database connection failed: {e}")
         raise
@@ -54,47 +38,32 @@ def get_db_connection():
 def search_contacts(query=None, limit=50):
     """Search contacts in cache"""
     try:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        
-        if query:
-            cur.execute("""
-                SELECT contact_id, name, first_name, last_name, 
-                       company_name, email, phone, address, 
-                       created_at, last_sync
-                FROM crm_contacts_cache 
-                WHERE name ILIKE %s 
-                   OR company_name ILIKE %s 
-                   OR email ILIKE %s
-                ORDER BY name
-                LIMIT %s
-            """, (f"%{query}%", f"%{query}%", f"%{query}%", limit))
-        else:
-            cur.execute("""
-                SELECT contact_id, name, first_name, last_name, 
-                       company_name, email, phone, address, 
-                       created_at, last_sync
-                FROM crm_contacts_cache 
-                ORDER BY name
-                LIMIT %s
-            """, (limit,))
-        
-        rows = cur.fetchall()
-        
-        # Convert to dict format manually since pg8000 doesn't have RealDictCursor
-        columns = ['contact_id', 'name', 'first_name', 'last_name', 
-                  'company_name', 'email', 'phone', 'address', 
-                  'created_at', 'last_sync']
-        
-        result = []
-        for row in rows:
-            row_dict = {}
-            for i, col in enumerate(columns):
-                row_dict[col] = row[i]
-            result.append(row_dict)
-        
-        conn.close()
-        return result
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                if query:
+                    cur.execute("""
+                        SELECT contact_id, name, first_name, last_name, 
+                               company_name, email, phone, address, 
+                               created_at, last_sync
+                        FROM crm_contacts_cache 
+                        WHERE name ILIKE %s 
+                           OR company_name ILIKE %s 
+                           OR email ILIKE %s
+                        ORDER BY name
+                        LIMIT %s
+                    """, (f"%{query}%", f"%{query}%", f"%{query}%", limit))
+                else:
+                    cur.execute("""
+                        SELECT contact_id, name, first_name, last_name, 
+                               company_name, email, phone, address, 
+                               created_at, last_sync
+                        FROM crm_contacts_cache 
+                        ORDER BY name
+                        LIMIT %s
+                    """, (limit,))
+                
+                rows = cur.fetchall()
+                return [dict(row) for row in rows]
                 
     except Exception as e:
         logger.error(f"Contact search failed: {e}")
@@ -103,22 +72,19 @@ def search_contacts(query=None, limit=50):
 def get_cache_stats():
     """Get cache statistics"""
     try:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        
-        cur.execute("SELECT COUNT(*) FROM crm_contacts_cache")
-        total_contacts = cur.fetchone()[0]
-        
-        cur.execute("SELECT MAX(last_sync) FROM crm_contacts_cache")
-        last_sync = cur.fetchone()[0]
-        
-        conn.close()
-        
-        return {
-            "total_contacts": total_contacts,
-            "last_sync": last_sync.isoformat() if last_sync else None,
-            "cache_health": "healthy" if total_contacts > 0 else "empty"
-        }
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT COUNT(*) FROM crm_contacts_cache")
+                total_contacts = cur.fetchone()[0]
+                
+                cur.execute("SELECT MAX(last_sync) FROM crm_contacts_cache")
+                last_sync = cur.fetchone()[0]
+                
+                return {
+                    "total_contacts": total_contacts,
+                    "last_sync": last_sync.isoformat() if last_sync else None,
+                    "cache_health": "healthy" if total_contacts > 0 else "empty"
+                }
                 
     except Exception as e:
         logger.error(f"Stats failed: {e}")
