@@ -104,23 +104,30 @@ def create_contact_in_lacrm(name, email=None, phone=None, company_name=None, add
             first_name = parts[0]
             last_name = parts[1] if len(parts) > 1 else ""
         
-        params = {
+        # LACRM requires POST with JSON for array fields (email, phone, address)
+        payload = {
             'APIToken': LACRM_API_KEY,
             'UserCode': user_code,
             'Function': 'CreateContact',
             'FirstName': first_name,
             'LastName': last_name,
             'CompanyName': company_name or "",
-            'IsCompany': 'true' if company_name else 'false',
+            'IsCompany': True if company_name else False,
             'AssignedTo': user_code
         }
         
-        # Skip email/phone/address for now - LACRM array format is tricky
-        # Focus on getting basic contact creation working first
+        # Add array fields if provided
+        if email:
+            payload['Email'] = [{"Text": email, "Type": "Work"}]
+        if phone:
+            payload['Phone'] = [{"Text": phone, "Type": "Work"}]
+        if address:
+            # Parse address if it's a simple string
+            payload['Address'] = [{"Street": address, "Type": "Work"}]
         
-        response = requests.get(
+        response = requests.post(
             LACRM_BASE_URL,
-            params=params,
+            json=payload,
             timeout=30
         )
         
