@@ -93,22 +93,23 @@ def get_cache_stats():
 def create_contact_in_lacrm(name, email=None, phone=None, company_name=None, address=None):
     """Create new contact in LACRM with proper API handling"""
     try:
-        payload = {
-            "Function": "CreateContact",
-            "Parameters": {
-                "ApiToken": LACRM_API_KEY,
-                "Name": name,
-                "Email": email or "",
-                "Phone": phone or "", 
-                "CompanyName": company_name or "",
-                "Address": address or ""
-            }
+        # Extract UserCode from API key
+        user_code = LACRM_API_KEY.split('-')[0]  # Gets '1073223'
+        
+        params = {
+            'APIToken': LACRM_API_KEY,
+            'UserCode': user_code,
+            'Function': 'CreateContact',
+            'Name': name or "",
+            'Email': email or "",
+            'Phone': phone or "", 
+            'CompanyName': company_name or "",
+            'Address': address or ""
         }
         
-        response = requests.post(
+        response = requests.get(
             LACRM_BASE_URL,
-            headers={"Content-Type": "application/json"},
-            json=payload,
+            params=params,
             timeout=30
         )
         
