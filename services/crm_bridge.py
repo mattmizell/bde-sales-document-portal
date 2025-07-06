@@ -240,7 +240,7 @@ class CRMBridge:
                 contact_id = result.get("ContactId")
                 
                 # Update cache immediately
-                await self._update_contact_cache(contact_id, contact_data.dict())
+                await self._update_contact_cache(contact_id, contact_data.model_dump())
                 
                 logger.info(f"✅ Contact created in LACRM: {contact_id}")
                 
