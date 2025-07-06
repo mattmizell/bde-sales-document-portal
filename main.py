@@ -942,10 +942,10 @@ class CRMHandler(BaseHTTPRequestHandler):
                 
                 # Map template names to actual DocuSeal template IDs (numeric)
                 template_mapping = {
-                    "customer_setup": 1,  # Customer Setup Form
-                    "eft_auth": 2,  # EFT Authorization (if exists)
+                    "customer_setup": 4,  # Customer Setup Form (verified)
+                    "eft_auth": 6,  # EFT Authorization Form (verified) 
                     "p66_loi": 3,  # P66 LOI (if exists)
-                    "vp_loi": 4  # VP Racing LOI (if exists)
+                    "vp_loi": 5  # VP Racing LOI (if exists)
                 }
                 
                 # Get numeric template ID, default to 1 if not found
