@@ -127,46 +127,159 @@
         .copy-button:hover {
             background: #218838;
         }
+        
+        /* Workflow Chooser Styles */
+        .workflow-chooser {
+            display: flex;
+            gap: 30px;
+            margin: 30px 0;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .workflow-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            min-width: 300px;
+            transition: all 0.3s ease;
+        }
+        
+        .workflow-card:hover {
+            border-color: #007bff;
+            box-shadow: 0 4px 12px rgba(0,123,255,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .workflow-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .workflow-card h3 {
+            color: #333;
+            margin: 15px 0 10px 0;
+        }
+        
+        .workflow-card p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        
+        .workflow-button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+        
+        .crm-button {
+            background: #007bff;
+            color: white;
+        }
+        
+        .crm-button:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+        
+        .docuseal-button {
+            background: #28a745;
+            color: white;
+        }
+        
+        .docuseal-button:hover {
+            background: #1e7e34;
+            transform: translateY(-1px);
+        }
+        
+        .back-button {
+            background: #6c757d;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        
+        .back-button:hover {
+            background: #545b62;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>BDE DocuSeal CRM Integration</h1>
+        <h1>🏢 BDE Document Portal</h1>
+        <h2>Document Workflow Center</h2>
         
-        <!-- Search Section -->
-        <div class="search-section">
-            <h2>Step 1: Search CRM Contact</h2>
-            <input type="text" id="searchInput" placeholder="Enter company name, contact name, or email">
-            <button onclick="searchContacts()">Search CRM</button>
-            
-            <div id="searchResults" style="margin-top: 20px;"></div>
-        </div>
-        
-        <!-- Form Selection Section -->
-        <div class="form-section">
-            <h2>Step 2: Select DocuSeal Template</h2>
-            <select id="templateSelect">
-                <option value="">Select a form template...</option>
-                <option value="customer_setup">Customer Setup Form</option>
-                <option value="eft_auth">EFT Authorization Form</option>
-                <option value="p66_loi">Phillips 66 Letter of Intent</option>
-                <option value="vp_loi">VP Racing Fuels Letter of Intent</option>
-            </select>
-            
-            <div id="selectedContact" style="margin-top: 20px; display: none;">
-                <h3>Selected Contact:</h3>
-                <div id="contactDetails"></div>
+        <!-- Main Workflow Chooser -->
+        <div id="workflowChooser" class="workflow-chooser">
+            <div class="workflow-card">
+                <div class="workflow-icon">🔍</div>
+                <h3>Existing Customer</h3>
+                <p>Search CRM and create pre-filled forms with customer data</p>
+                <button onclick="showCRMSearch()" class="workflow-button crm-button">
+                    Search CRM & Pre-fill Forms
+                </button>
             </div>
             
-            <button onclick="previewForm()" style="margin-top: 10px;">Preview Pre-filled Form</button>
-            <button onclick="createDocuSealForm()" style="margin-top: 10px; background: #28a745;">Create DocuSeal Form</button>
+            <div class="workflow-card">
+                <div class="workflow-icon">📄</div>
+                <h3>New Customer</h3>
+                <p>Create fresh forms directly in DocuSeal</p>
+                <button onclick="launchDocuSeal()" class="workflow-button docuseal-button">
+                    Launch DocuSeal
+                </button>
+            </div>
         </div>
         
-        <!-- Results Section -->
-        <div class="results-section" id="resultsSection" style="display: none;">
-            <h2>Pre-filled Form Data</h2>
-            <div id="formPreview"></div>
-            <div id="statusMessage"></div>
+        <!-- CRM Search Section (hidden by default) -->
+        <div id="crmSearchSection" style="display: none;">
+            <button onclick="hideCRMSearch()" class="back-button">← Back to Main Menu</button>
+            
+            <!-- Search Section -->
+            <div class="search-section">
+                <h2>Step 1: Search CRM Contact</h2>
+                <input type="text" id="searchInput" placeholder="Enter company name, contact name, or email">
+                <button onclick="searchContacts()">Search CRM</button>
+                
+                <div id="searchResults" style="margin-top: 20px;"></div>
+            </div>
+            
+            <!-- Form Selection Section -->
+            <div class="form-section">
+                <h2>Step 2: Select DocuSeal Template</h2>
+                <select id="templateSelect">
+                    <option value="">Select a form template...</option>
+                    <option value="customer_setup">Customer Setup Form</option>
+                    <option value="eft_auth">EFT Authorization Form</option>
+                    <option value="p66_loi">Phillips 66 Letter of Intent</option>
+                    <option value="vp_loi">VP Racing Fuels Letter of Intent</option>
+                </select>
+                
+                <div id="selectedContact" style="margin-top: 20px; display: none;">
+                    <h3>Selected Contact:</h3>
+                    <div id="contactDetails"></div>
+                </div>
+                
+                <button onclick="previewForm()" style="margin-top: 10px;">Preview Pre-filled Form</button>
+                <button onclick="createDocuSealForm()" style="margin-top: 10px; background: #28a745;">Create DocuSeal Form</button>
+            </div>
+            
+            <!-- Results Section -->
+            <div class="results-section" id="resultsSection" style="display: none;">
+                <h2>Pre-filled Form Data</h2>
+                <div id="formPreview"></div>
+                <div id="statusMessage"></div>
+            </div>
         </div>
     </div>
     
@@ -176,6 +289,31 @@
         
         // CRM Bridge API URL
         const CRM_API = 'https://bde-sales-portal.onrender.com';
+        
+        // Navigation functions for workflow chooser
+        function showCRMSearch() {
+            document.getElementById('workflowChooser').style.display = 'none';
+            document.getElementById('crmSearchSection').style.display = 'block';
+        }
+        
+        function hideCRMSearch() {
+            document.getElementById('workflowChooser').style.display = 'flex';
+            document.getElementById('crmSearchSection').style.display = 'none';
+            
+            // Reset search state
+            selectedContact = null;
+            prefilledData = null;
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').innerHTML = '';
+            document.getElementById('selectedContact').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('templateSelect').value = '';
+        }
+        
+        function launchDocuSeal() {
+            // Open DocuSeal in a new tab
+            window.open('https://bde-docuseal-selfhosted.onrender.com', '_blank');
+        }
         
         async function searchContacts() {
             const searchTerm = document.getElementById('searchInput').value;
@@ -507,33 +645,37 @@
                 
                 const result = await response.json();
                 
-                if (result.signing_url) {
-                    // Success! Open the form
-                    showStatus('Form created successfully! Opening DocuSeal form...', true);
+                if (result.submission_id) {
+                    // Success! Form created in DocuSeal
+                    showStatus('✅ Form created and pre-filled successfully!', true);
                     
                     const statusDiv = document.getElementById('statusMessage');
                     statusDiv.innerHTML += `
                         <div style="margin-top: 20px; padding: 15px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px;">
-                            <h3>✅ DocuSeal Form Ready!</h3>
-                            <p><strong>Form URL:</strong> <a href="${result.signing_url}" target="_blank">${result.signing_url}</a></p>
-                            <button onclick="window.open('${result.signing_url}', '_blank')" style="background: #28a745; margin-right: 10px;">Open Form</button>
-                            <button onclick="copyUrl('${result.signing_url}')" class="copy-button">Copy URL</button>
-                            <p style="margin-top: 10px; font-size: 12pt;">
-                                <strong>What happens next:</strong><br>
-                                • Customer fills out and signs the pre-filled form<br>
-                                • Completed document is automatically saved to your CRM<br>
-                                • You get notified when it's completed
-                            </p>
+                            <h3>✅ DocuSeal Form Created!</h3>
+                            <p><strong>Customer:</strong> ${selectedContact.company_name || selectedContact.name}</p>
+                            <p><strong>Template:</strong> ${template.replace(/_/g, ' ').toUpperCase()}</p>
+                            <p><strong>Submission ID:</strong> ${result.submission_id}</p>
+                            
+                            <div style="margin-top: 15px; padding: 15px; background: #e3f2fd; border: 1px solid #90caf9; border-radius: 4px;">
+                                <h4>📋 Next Steps:</h4>
+                                <ol style="margin: 10px 0; padding-left: 20px;">
+                                    <li>Log into <a href="https://bde-docuseal-selfhosted.onrender.com" target="_blank">DocuSeal</a></li>
+                                    <li>Find the pre-filled form for <strong>${selectedContact.company_name || selectedContact.name}</strong></li>
+                                    <li>Review the pre-filled information</li>
+                                    <li>Route the form to the customer for signature</li>
+                                </ol>
+                            </div>
+                            
+                            <button onclick="window.open('https://bde-docuseal-selfhosted.onrender.com', '_blank')" 
+                                    style="background: #2196F3; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px;">
+                                Open DocuSeal Dashboard
+                            </button>
                         </div>
                     `;
                     
-                    // Auto-open the form in a new window
-                    setTimeout(() => {
-                        window.open(result.signing_url, '_blank');
-                    }, 1000);
-                    
                 } else {
-                    throw new Error('No signing URL returned from DocuSeal');
+                    throw new Error('Form created but no submission ID returned');
                 }
                 
             } catch (error) {

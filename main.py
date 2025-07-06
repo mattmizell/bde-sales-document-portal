@@ -956,9 +956,10 @@ class CRMHandler(BaseHTTPRequestHandler):
                 docuseal_api_key = os.getenv("DOCUSEAL_API_TOKEN", "mHVsKRBH4EWVPEAxZ4nsVCa1WmAjZr4hhxj2MBWyCns")
                 
                 # DocuSeal expects numeric template_id
+                # Set send_email to True to create in DocuSeal for routing
                 payload = {
                     "template_id": actual_template_id,
-                    "send_email": False,  # Don't auto-send, return link instead
+                    "send_email": True,  # Create in DocuSeal for routing workflow
                     "submitters": [{
                         "role": "First Party",
                         "email": contact_email,
